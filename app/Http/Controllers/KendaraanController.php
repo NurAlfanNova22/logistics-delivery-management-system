@@ -10,31 +10,39 @@ class KendaraanController extends Controller
 {
     public function index()
     {
-        $kendaraans = Kendaraan::with('sopir')->get();
+        $kendaraans = Kendaraan::with('sopirs')->get();
         return view('admin.kendaraan.index', compact('kendaraans'));
     }
 
     public function create()
     {
-        $sopirs = Sopir::all();
-        return view('admin.kendaraan.create', compact('sopirs'));
+        return view('admin.kendaraan.create');
     }
 
     public function store(Request $request)
     {
-        Kendaraan::create($request->all());
+        Kendaraan::create([
+            'no_polisi' => $request->no_polisi,
+            'jenis' => $request->jenis,
+            'merk' => $request->merk
+        ]);
+
         return redirect('/admin/kendaraan')->with('success','Data kendaraan ditambahkan');
     }
 
     public function edit(Kendaraan $kendaraan)
     {
-        $sopirs = Sopir::all();
-        return view('admin.kendaraan.edit', compact('kendaraan','sopirs'));
+        return view('admin.kendaraan.edit', compact('kendaraan'));
     }
 
     public function update(Request $request, Kendaraan $kendaraan)
     {
-        $kendaraan->update($request->all());
+        $kendaraan->update([
+            'no_polisi' => $request->no_polisi,
+            'jenis' => $request->jenis,
+            'merk' => $request->merk
+        ]);
+
         return redirect('/admin/kendaraan')->with('success','Data kendaraan diperbarui');
     }
 

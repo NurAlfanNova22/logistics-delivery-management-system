@@ -73,4 +73,43 @@ class AuthController extends Controller
             'token' => $token
         ], 201);
     }
+
+    public function loginDriver(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'password' => 'required'
+        ]);
+
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json([
+                'message' => 'Email atau password salah'
+            ], 401);
+        }
+
+        $user = Auth::user();
+
+        if ($user->role !== 'sopir') {
+            return response()->json([
+                'message' => 'Akses hanya untuk sopir'
+            ], 403);
+        }
+
+        // ambil data sopir
+        $sopir = $user->sopir;
+
+        $token = $user->createToken('driver_token')->plainTextToken;
+
+        return response()->json([
+            'message' => 'Login berhasil',
+            'user' => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+                'role' => $user->role
+            ],
+            'sopir' => $sopir,
+            'token' => $token
+        ]);
+    }
 }

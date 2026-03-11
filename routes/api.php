@@ -41,3 +41,5 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::get('/driver/stats/{sopir_id}', [PesananApiController::class,'driverStats']);
+
+Route::post('/driver/login', [AuthController::class, 'loginDriver']);

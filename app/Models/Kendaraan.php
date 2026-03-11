@@ -7,10 +7,14 @@ use App\Models\Sopir;
 
 class Kendaraan extends Model
 {
-    protected $fillable = ['no_polisi','jenis','merk','sopir_id'];
-    
-    public function sopir()
+    protected $fillable = [
+        'no_polisi',
+        'jenis',
+        'merk'
+    ];
+
+    public function sopirs()
     {
-        return $this->belongsTo(Sopir::class);
+        return $this->hasMany(Sopir::class);
     }
 }
