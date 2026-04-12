@@ -13,9 +13,9 @@ class DashboardController extends Controller
     public function index()
     {
         $totalPesanan = Pesanan::count();
-        $aktif = Pesanan::where('status', 'aktif')->count();
-        $selesai = Pesanan::where('status', 'selesai')->count();
-        $menunggu = Pesanan::where('status', 'menunggu')->count();
+        $aktif = Pesanan::where('status', 'LIKE', '%aktif%')->count();
+        $selesai = Pesanan::where('status', 'LIKE', '%selesai%')->count();
+        $menunggu = Pesanan::where('status', 'LIKE', '%menunggu%')->count();
 
         $totalSopir = Sopir::count();
         $totalKendaraan = Kendaraan::count();

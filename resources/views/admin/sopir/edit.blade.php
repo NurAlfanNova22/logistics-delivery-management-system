@@ -1,69 +1,69 @@
 @extends('layouts.admin')
+@section('page-title', 'Edit Sopir')
 
 @section('content')
+<div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+        <div class="card">
+            <div class="card-body p-4">
+                <div class="mb-4 text-center">
+                    <div class="admin-avatar mx-auto mb-3" style="width: 64px; height: 64px; font-size: 24px;">
+                        {{ strtoupper(substr($sopir->nama, 0, 1)) }}
+                    </div>
+                    <h5 class="fw-bold mb-1">Edit Profil Sopir</h5>
+                    <p class="text-muted small">Perbarui data informasi driver dan alokasi kendaraan.</p>
+                </div>
 
-<h4>Edit Sopir</h4>
+                <form method="POST" action="/admin/sopir/{{ $sopir->id }}">
+                    @csrf
+                    @method('PUT')
 
-<form method="POST" action="/admin/sopir/{{ $sopir->id }}">
-@csrf
-@method('PUT')
+                    <div class="row g-3">
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small text-muted">Nama Lengkap</label>
+                            <input type="text" class="form-control" name="nama" value="{{ $sopir->nama }}" required>
+                        </div>
 
-<div class="mb-2">
-<input class="form-control"
-       name="nama"
-       value="{{ $sopir->nama }}"
-       placeholder="Nama Sopir"
-       required>
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small text-muted">Email Login</label>
+                            <input type="email" class="form-control" name="email" value="{{ $sopir->user->email ?? '' }}" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small text-muted">Nomor WhatsApp/HP</label>
+                            <input type="text" class="form-control" name="no_hp" value="{{ $sopir->no_hp }}" required>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small text-muted">Alamat Domisili</label>
+                            <textarea class="form-control" name="alamat" rows="3" required>{{ $sopir->alamat }}</textarea>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small text-muted">Kendaraan Utama</label>
+                            <select class="form-select" name="kendaraan_id">
+                                <option value="">-- Tanpa Kendaraan Utama --</option>
+                                @foreach($kendaraans as $k)
+                                <option value="{{ $k->id }}" {{ $sopir->kendaraan_id == $k->id ? 'selected' : '' }}>
+                                    {{ $k->no_polisi }} — {{ $k->merk }} ({{ $k->jenis }})
+                                </option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <div class="col-12 mt-4">
+                            <hr class="text-muted opacity-25">
+                            <div class="d-flex gap-2 justify-content-end pt-2">
+                                <a href="/admin/sopir" class="btn btn-outline-secondary px-4">Batal</a>
+                                <button type="submit" class="btn btn-primary px-4">
+                                    <i class="bi bi-save me-1"></i> Simpan Perubahan
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
-
-<div class="mb-2">
-<input class="form-control"
-       name="email"
-       value="{{ $sopir->user->email ?? '' }}"
-       placeholder="Email Login"
-       required>
-</div>
-
-<div class="mb-2">
-<input class="form-control"
-       name="no_hp"
-       value="{{ $sopir->no_hp }}"
-       placeholder="No HP"
-       required>
-</div>
-
-<div class="mb-2">
-<textarea class="form-control"
-          name="alamat"
-          placeholder="Alamat"
-          required>{{ $sopir->alamat }}</textarea>
-</div>
-
-<div class="mb-3">
-<label>Kendaraan Utama</label>
-
-<select class="form-control" name="kendaraan_id">
-
-<option value="">-- Pilih Kendaraan --</option>
-
-@foreach($kendaraans as $k)
-
-<option value="{{ $k->id }}"
-{{ $sopir->kendaraan_id == $k->id ? 'selected' : '' }}>
-
-{{ $k->no_polisi }} - {{ $k->merk }} ({{ $k->jenis }})
-
-</option>
-
-@endforeach
-
-</select>
-
-</div>
-
-<button class="btn btn-primary">Update</button>
-<a href="/admin/sopir" class="btn btn-secondary">Kembali</a>
-
-</form>
-
 @endsection

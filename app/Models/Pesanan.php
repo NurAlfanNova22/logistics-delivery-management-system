@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Sopir;
 use App\Models\Kendaraan;
+use App\Models\Checkpoint;
 
 class Pesanan extends Model
 {
@@ -30,6 +31,10 @@ class Pesanan extends Model
     public function kendaraan()
     {
         return $this->belongsTo(Kendaraan::class);
+    }
+    public function checkpoints()
+    {
+        return $this->hasMany(Checkpoint::class);
     }
 
 }

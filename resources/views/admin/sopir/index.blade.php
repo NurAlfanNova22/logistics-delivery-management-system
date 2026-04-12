@@ -14,6 +14,7 @@
         <th>No HP</th>
         <th>Kendaraan</th>
         <th>Alamat</th>
+        <th>Status</th>
         <th>Aksi</th>
     </tr>
 
@@ -33,6 +34,16 @@
         </td>
 
         <td>{{ $s->alamat }}</td>
+
+        <td>
+            @if($s->ketersediaan == 'Tersedia')
+                <span class="badge bg-success">Tersedia</span>
+            @elseif($s->ketersediaan == 'Sedang Bertugas')
+                <span class="badge bg-warning text-dark">Sedang Bertugas</span>
+            @else
+                <span class="badge bg-secondary">Offline</span>
+            @endif
+        </td>
 
         <td>
             <a href="/admin/sopir/{{ $s->id }}/edit"

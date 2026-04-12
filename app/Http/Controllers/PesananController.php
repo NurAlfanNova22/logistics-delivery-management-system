@@ -21,7 +21,15 @@ class PesananController extends Controller
     public function assignStore(Request $request, $id)
     {
         $request->validate([
-            'sopir_id' => 'required',
+            'sopir_id' => [
+                'required',
+                function ($attribute, $value, $fail) {
+                    $sopir = \App\Models\Sopir::find($value);
+                    if ($sopir && $sopir->ketersediaan !== 'Tersedia') {
+                        $fail('Sopir yang dipilih sedang ' . $sopir->ketersediaan . '.');
+                    }
+                },
+            ],
             'kendaraan_id' => 'required'
         ]);
 
@@ -47,7 +55,11 @@ class PesananController extends Controller
         $query = Pesanan::with('sopir.kendaraan');
 
         if ($request->status) {
-            $query->where('status', $request->status);
+            $query->where('status', 'LIKE', '%' . $request->status . '%');
+        }
+
+        if ($request->tanggal) {
+            $query->whereDate('created_at', $request->tanggal);
         }
 
         $pesanan = $query->latest()->paginate(10);

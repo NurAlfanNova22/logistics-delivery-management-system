@@ -1,28 +1,47 @@
 @extends('layouts.admin')
+@section('page-title', 'Data Pesanan')
 
 @section('content')
-<div class="container">
-    <h3 class="mb-4">Data Pesanan</h3>
+<div>
+    {{-- Toolbar --}}
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <form method="GET" class="d-flex gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm border">
+            <div class="input-group input-group-sm" style="width: 200px;">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-filter text-muted"></i></span>
+                <select name="status" onchange="this.form.submit()" class="form-select border-start-0">
+                    <option value="">Semua Status</option>
+                    <option value="MENUNGGU KONFIRMASI" {{ request('status') == 'MENUNGGU KONFIRMASI' ? 'selected' : '' }}>Menunggu Konfirmasi</option>
+                    <option value="AKTIF" {{ request('status') == 'AKTIF' ? 'selected' : '' }}>Aktif</option>
+                    <option value="SELESAI" {{ request('status') == 'SELESAI' ? 'selected' : '' }}>Selesai</option>
+                </select>
+            </div>
 
-    <form method="GET" class="mb-3">
-        <select name="status" onchange="this.form.submit()" class="form-select w-auto">
-            <option value="">Semua Status</option>
-            <option value="menunggu">Menunggu</option>
-            <option value="aktif">Aktif</option>
-            <option value="selesai">Selesai</option>
-        </select>
-    </form>
+            <div class="input-group input-group-sm" style="width: 220px;">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-calendar3 text-muted"></i></span>
+                <input type="date" name="tanggal" value="{{ request('tanggal') }}" onchange="this.form.submit()" class="form-control border-start-0">
+            </div>
+
+            @if(request('status') || request('tanggal'))
+                <a href="{{ route('pesanan.index') }}" class="btn btn-sm btn-outline-secondary px-3">
+                    <i class="bi bi-x-circle me-1"></i>Reset
+                </a>
+            @endif
+        </form>
+    </div>
 
     @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
+        <div class="alert alert-success d-flex align-items-center gap-2 mb-4">
+            <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
+        </div>
     @endif
 
-    <div class="card shadow-sm">
+    <div class="card">
         <div class="card-body p-0">
             <table class="table mb-0">
-                <thead class="table-light">
+                <thead>
                     <tr>
-                        <th>ID</th>
+                        <th class="ps-4">ID</th>
+                        <th>Tanggal</th>
                         <th>Resi</th>
                         <th>Pengirim</th>
                         <th>Tujuan</th>
@@ -32,71 +51,69 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($pesanan as $item)
+                    @forelse($pesanan as $item)
                     <tr>
-                        {{-- ID --}}
-                        <td>{{ $item->id }}</td>
-
+                        <td class="ps-4 text-muted">{{ $item->id }}</td>
                         <td>
-                            <span class="fw-bold text-primary">
-                                {{ $item->resi ?? '-' }}
-                            </span>
+                            <span class="fw-semibold" style="font-size:13px">{{ $item->created_at->format('d M Y') }}</span><br>
+                            <small class="text-muted">{{ $item->created_at->format('H:i') }}</small>
                         </td>
-
-                        {{-- Pengirim --}}
                         <td>
-                            <strong>{{ $item->nama_pabrik }}</strong><br>
-                            <small class="text-muted">{{ $item->alamat_asal }}</small>
+                            <span class="fw-bold text-primary">{{ $item->resi ?? '-' }}</span>
                         </td>
-
-                        {{-- Tujuan --}}
-                        <td>{{ $item->alamat_tujuan }}</td>
-
-                        {{-- Status --}}
+                        <td>
+                            <span class="fw-semibold">{{ $item->nama_pabrik }}</span><br>
+                            <small class="text-muted">{{ Str::limit($item->alamat_asal, 35) }}</small>
+                        </td>
+                        <td>
+                            <small>{{ Str::limit($item->alamat_tujuan, 35) }}</small>
+                        </td>
                         <td>
                             <span class="badge
-                                @if(strtolower($item->status) === 'menunggu') bg-warning
-                                @elseif(strtolower($item->status) === 'aktif') bg-primary
-                                @else bg-success
+                                @if(str_contains(strtolower($item->status), 'menunggu')) text-bg-warning
+                                @elseif(strtolower($item->status) === 'aktif') text-bg-primary
+                                @elseif(strtolower($item->status) === 'dibatalkan') text-bg-danger
+                                @else text-bg-success
                                 @endif">
-                                {{ ucfirst(strtolower($item->status)) }}
+                                {{ $item->status }}
                             </span>
                         </td>
-
                         <td>
                             @if($item->status_pengiriman)
-                                <span class="badge bg-info">
-                                    {{ $item->status_pengiriman }}
-                                </span>
+                                <span class="badge text-bg-info">{{ $item->status_pengiriman }}</span>
                             @else
-                                <span class="text-muted">-</span>
+                                <span class="text-muted">–</span>
                             @endif
                         </td>
-
-                        {{-- Aksi --}}
                         <td>
-                            @if(strtolower($item->status) === 'menunggu')
-                                <a href="{{ route('pesanan.assignForm', $item->id) }}"
-                                    class="btn btn-sm btn-primary">
-                                    Assign
-                                </a>
-                            @endif
+                            <div class="d-flex gap-1">
+                                @if(str_contains(strtolower($item->status), 'menunggu') && !$item->sopir_id)
+                                    <a href="{{ route('pesanan.assignForm', $item->id) }}"
+                                        class="btn btn-sm btn-primary">
+                                        <i class="bi bi-person-check-fill me-1"></i>Assign
+                                    </a>
+                                @endif
 
-                            @if(strtolower($item->status) !== 'selesai')
-                                <a href="{{ route('pesanan.updateStatusForm', $item->id) }}"
-                                    class="btn btn-dark btn-sm">
-                                    Update Status
-                                </a>
-                            @endif
+                                @if(strtolower($item->status) !== 'selesai')
+                                    <a href="{{ route('pesanan.updateStatusForm', $item->id) }}"
+                                        class="btn btn-sm btn-outline-secondary">
+                                        <i class="bi bi-pencil-fill"></i>
+                                    </a>
+                                @endif
+                            </div>
                         </td>
                     </tr>
-                    @endforeach
-                    </tbody>
+                    @empty
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-5">
+                            <i class="bi bi-inbox" style="font-size:2rem;display:block;margin-bottom:8px;opacity:0.4"></i>
+                            Tidak ada data pesanan
+                        </td>
+                    </tr>
+                    @endforelse
+                </tbody>
             </table>
         </div>
-    </div>
-
-    <div class="mt-3">
         {{ $pesanan->links() }}
     </div>
 </div>

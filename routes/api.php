@@ -11,18 +11,22 @@ Route::get('/user', function (Request $request) {
 
 Route::get('/pesanan', [PesananApiController::class, 'index']);
 Route::post('/pesanan', [PesananApiController::class, 'store']);
+Route::post('/pesanan/{id}/selesaikan', [PesananApiController::class, 'selesaikanPesanan']);
+Route::post('/pesanan/{id}/batal', [PesananApiController::class, 'batalkanPesanan']);
 
 Route::get('/driver/orders/{sopir_id}', [PesananApiController::class, 'driverOrders']);
 
 Route::post('/driver/update-status/{id}', [PesananApiController::class, 'updateStatusPengiriman']);
 
 Route::get('/tracking/{resi}', [PesananApiController::class, 'trackingResi']);
+Route::post('/driver/add-checkpoint', [PesananApiController::class, 'addCheckpoint']);
+Route::post('/driver/toggle-online', [PesananApiController::class, 'toggleOnline']);
 
 Route::get('/dashboard', function () {
     return response()->json([
         'total' => \App\Models\Pesanan::count(),
 
-        'diproses' => \App\Models\Pesanan::where('status','MENUNGGU')->count(),
+        'diproses' => \App\Models\Pesanan::where('status','LIKE','%MENUNGGU%')->count(),
 
         'dikirim' => \App\Models\Pesanan::where('status_pengiriman','DALAM PERJALANAN')->count(),
 

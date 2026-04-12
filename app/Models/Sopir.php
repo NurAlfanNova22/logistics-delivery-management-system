@@ -11,7 +11,8 @@ class Sopir extends Model
         'kendaraan_id',
         'nama',
         'no_hp',
-        'alamat'
+        'alamat',
+        'is_online'
     ];
     
     public function kendaraan()
@@ -22,5 +23,19 @@ class Sopir extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function getKetersediaanAttribute()
+    {
+        if (!$this->is_online) {
+            return 'Offline';
+        }
+
+        // Check if there is an active order
+        $sedangBertugas = \App\Models\Pesanan::where('sopir_id', $this->id)
+            ->where('status', '!=', 'SELESAI')
+            ->exists();
+
+        return $sedangBertugas ? 'Sedang Bertugas' : 'Tersedia';
     }
 }
