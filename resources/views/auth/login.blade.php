@@ -177,7 +177,7 @@
         <div class="brand-logo">
             <i class="bi bi-truck-front-fill"></i>
         </div>
-        <h2>Lancar Ekspedisi</h2>
+        <h2>Lancar Ekspedisiiiiiiiiiiii</h2>
         <p class="subtitle">Masuk ke panel manajemen admin</p>
 
         @if(session('error'))
