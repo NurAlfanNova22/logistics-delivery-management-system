@@ -7,6 +7,7 @@ use App\Http\Controllers\KendaraanController;
 use App\Http\Controllers\PesananController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\LaporanController;
 
 /*
 |--------------------------------------------------------------------------
@@ -34,6 +35,9 @@ Route::middleware([AdminMiddleware::class])
 
         Route::get('/dashboard', [DashboardController::class, 'index'])
             ->name('admin.dashboard');
+
+        Route::get('/laporan-keuangan', [LaporanController::class, 'keuangan'])
+            ->name('admin.laporan.keuangan');
 
         Route::resource('/sopir', SopirController::class);
         Route::resource('/kendaraan', KendaraanController::class);

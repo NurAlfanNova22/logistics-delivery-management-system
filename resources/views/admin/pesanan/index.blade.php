@@ -87,6 +87,13 @@
                                 @endif">
                                 {{ $item->status }}
                             </span>
+                            @if(isset($item->status_pembayaran))
+                                <br>
+                                <span class="badge {{ strtoupper($item->status_pembayaran) == 'SUDAH DIBAYAR' ? 'text-bg-success' : 'text-bg-danger' }} mt-1" style="font-size: 10px;">
+                                    <i class="bi {{ strtoupper($item->status_pembayaran) == 'SUDAH DIBAYAR' ? 'bi-check-circle-fill' : 'bi-x-circle-fill' }} me-1"></i>
+                                    {{ rtrim(str_replace('BELUM DIBAYAR', 'BLM BAYAR', $item->status_pembayaran)) }}
+                                </span>
+                            @endif
                         </td>
                         <td>
                             @if($item->status_pengiriman)

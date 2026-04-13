@@ -48,8 +48,36 @@ class PesananApiController extends Controller
             'jenis_barang' => $request->jenis_barang,
             'berat' => $request->berat,
             'total_biaya' => $request->total_biaya ?? 0,
-            'status' => 'MENUNGGU KONFIRMASI'
+            'status' => 'MENUNGGU KONFIRMASI',
+            'status_pembayaran' => 'BELUM DIBAYAR'
         ]);
+
+        if ($pesanan->total_biaya > 0) {
+            \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY', 'SB-Mid-server-x...');
+            \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+            \Midtrans\Config::$isSanitized = true;
+            \Midtrans\Config::$is3ds = true;
+
+            $params = [
+                'transaction_details' => [
+                    'order_id' => $resi . '-' . time(),
+                    'gross_amount' => $pesanan->total_biaya,
+                ],
+                'customer_details' => [
+                    'first_name' => $request->nama_pabrik,
+                ]
+            ];
+
+            try {
+                $transaction = \Midtrans\Snap::createTransaction($params);
+                $pesanan->update([
+                    'snap_token' => $transaction->token,
+                    'payment_url' => $transaction->redirect_url
+                ]);
+            } catch (\Exception $e) {
+                // Log or ignore gracefully
+            }
+        }
 
         return response()->json($pesanan);
     }
@@ -235,5 +263,34 @@ class PesananApiController extends Controller
             'bulan_ini' => $bulanIni,
             'is_online' => \App\Models\Sopir::find($sopir_id)?->is_online ? true : false
         ]);
+    }
+
+    public function paymentCallback(Request $request)
+    {
+        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY', 'SB-Mid-server-x...');
+        \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+        
+        try {
+            $notif = new \Midtrans\Notification();
+            $transactionStatus = $notif->transaction_status;
+            $orderId = $notif->order_id;
+            
+            // Extract original Resi from order_id (Format: RESI-TIME)
+            $pesanan_resi = explode('-', $orderId)[0];
+            $pesanan = Pesanan::where('resi', $pesanan_resi)->first();
+            
+            if (!$pesanan) return response()->json(['message' => 'Pesanan not found'], 404);
+
+            if ($transactionStatus == 'capture' || $transactionStatus == 'settlement') {
+                $pesanan->status_pembayaran = 'SUDAH DIBAYAR';
+                $pesanan->save();
+            } else if ($transactionStatus == 'cancel' || $transactionStatus == 'deny' || $transactionStatus == 'expire') {
+                // Biarkan tetap "BELUM DIBAYAR" atau buat status terpisah jika perlu
+            }
+
+            return response()->json(['message' => 'Callback Handled']);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
     }
 }

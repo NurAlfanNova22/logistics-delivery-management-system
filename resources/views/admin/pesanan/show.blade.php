@@ -58,9 +58,18 @@
                     <hr class="text-muted opacity-25">
 
                     <div class="row bg-light rounded pt-3 pb-2 px-1 mx-0 border">
-                        <div class="col-12">
-                            <span class="d-block text-muted small mb-1"><i class="bi bi-cash-coin text-success me-1"></i>Estimasi Tagihan Biaya</span>
-                            <span class="fw-bold fs-4 text-success">Rp {{ number_format($pesanan->total_biaya ?? 0, 0, ',', '.') }}</span>
+                        <div class="col-12 d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="d-block text-muted small mb-1"><i class="bi bi-cash-coin text-success me-1"></i>Estimasi Tagihan Biaya</span>
+                                <span class="fw-bold fs-4 text-success">Rp {{ number_format($pesanan->total_biaya ?? 0, 0, ',', '.') }}</span>
+                            </div>
+                            <div>
+                                @if(strtoupper($pesanan->status_pembayaran) == 'SUDAH DIBAYAR')
+                                    <span class="badge bg-success fs-6 px-3 py-2"><i class="bi bi-check-circle me-1"></i> TELAH DIBAYAR</span>
+                                @else
+                                    <span class="badge bg-danger fs-6 px-3 py-2"><i class="bi bi-x-circle me-1"></i> BELUM DIBAYAR</span>
+                                @endif
+                            </div>
                         </div>
                     </div>
                 </div>

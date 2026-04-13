@@ -11,6 +11,7 @@ Route::get('/user', function (Request $request) {
 
 Route::get('/pesanan', [PesananApiController::class, 'index']);
 Route::post('/pesanan', [PesananApiController::class, 'store']);
+Route::post('/payment/callback', [PesananApiController::class, 'paymentCallback']);
 Route::post('/pesanan/{id}/selesaikan', [PesananApiController::class, 'selesaikanPesanan']);
 Route::post('/pesanan/{id}/batal', [PesananApiController::class, 'batalkanPesanan']);
 

@@ -21,7 +21,10 @@ class Pesanan extends Model
         'status_pengiriman',
         'sopir_id',
         'kendaraan_id',
-        'total_biaya'
+        'total_biaya',
+        'status_pembayaran',
+        'snap_token',
+        'payment_url'
     ];
 
     public function sopir()

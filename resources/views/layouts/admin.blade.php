@@ -230,6 +230,9 @@
         <a href="/admin/pesanan" class="{{ request()->is('admin/pesanan*') ? 'active' : '' }}">
             <i class="bi bi-box2-fill"></i> Data Pesanan
         </a>
+        <a href="{{ route('admin.laporan.keuangan') }}" class="{{ request()->is('admin/laporan-keuangan*') ? 'active' : '' }}">
+            <i class="bi bi-file-earmark-bar-graph"></i> Laporan Keuangan
+        </a>
     </div>
 
     <div class="sidebar-footer">
