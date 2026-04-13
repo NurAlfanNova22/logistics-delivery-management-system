@@ -5,7 +5,12 @@
 <div>
     {{-- Toolbar --}}
     <div class="d-flex align-items-center gap-3 mb-4">
-        <form method="GET" class="d-flex gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm border">
+        <form method="GET" class="d-flex flex-wrap gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm border w-100">
+            <div class="input-group input-group-sm" style="width: 200px;">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
+                <input type="text" name="resi" value="{{ request('resi') }}" placeholder="Cari Resi..." class="form-control border-start-0" onchange="this.form.submit()">
+            </div>
+
             <div class="input-group input-group-sm" style="width: 200px;">
                 <span class="input-group-text bg-light border-end-0"><i class="bi bi-filter text-muted"></i></span>
                 <select name="status" onchange="this.form.submit()" class="form-select border-start-0">
@@ -16,13 +21,18 @@
                 </select>
             </div>
 
-            <div class="input-group input-group-sm" style="width: 220px;">
-                <span class="input-group-text bg-light border-end-0"><i class="bi bi-calendar3 text-muted"></i></span>
+            <div class="input-group input-group-sm" style="width: 210px;">
+                <span class="input-group-text bg-light border-end-0" title="Tanggal Pembuatan Pesanan"><i class="bi bi-calendar3 text-muted"></i> Tgl Pesan</span>
                 <input type="date" name="tanggal" value="{{ request('tanggal') }}" onchange="this.form.submit()" class="form-control border-start-0">
             </div>
 
-            @if(request('status') || request('tanggal'))
-                <a href="{{ route('pesanan.index') }}" class="btn btn-sm btn-outline-secondary px-3">
+            <div class="input-group input-group-sm" style="width: 210px;">
+                <span class="input-group-text bg-light border-end-0" title="Tanggal Pesanan Tiba/Selesai"><i class="bi bi-calendar-check text-muted"></i> Tgl Selesai</span>
+                <input type="date" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}" onchange="this.form.submit()" class="form-control border-start-0">
+            </div>
+
+            @if(request('status') || request('tanggal') || request('resi') || request('tanggal_sampai'))
+                <a href="{{ route('pesanan.index') }}" class="btn btn-sm btn-outline-secondary px-3 ms-auto">
                     <i class="bi bi-x-circle me-1"></i>Reset
                 </a>
             @endif
@@ -87,16 +97,20 @@
                         </td>
                         <td>
                             <div class="d-flex gap-1">
+                                <a href="{{ route('pesanan.show', $item->id) }}" class="btn btn-sm btn-outline-info" title="Lihat Detail">
+                                    <i class="bi bi-eye-fill"></i>
+                                </a>
+
                                 @if(str_contains(strtolower($item->status), 'menunggu') && !$item->sopir_id)
                                     <a href="{{ route('pesanan.assignForm', $item->id) }}"
-                                        class="btn btn-sm btn-primary">
-                                        <i class="bi bi-person-check-fill me-1"></i>Assign
+                                        class="btn btn-sm btn-primary" title="Assign Sopir">
+                                        <i class="bi bi-person-check-fill"></i>
                                     </a>
                                 @endif
 
                                 @if(strtolower($item->status) !== 'selesai')
                                     <a href="{{ route('pesanan.updateStatusForm', $item->id) }}"
-                                        class="btn btn-sm btn-outline-secondary">
+                                        class="btn btn-sm btn-outline-secondary" title="Edit Status">
                                         <i class="bi bi-pencil-fill"></i>
                                     </a>
                                 @endif

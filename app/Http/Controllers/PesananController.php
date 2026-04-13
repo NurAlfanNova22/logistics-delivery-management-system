@@ -58,13 +58,31 @@ class PesananController extends Controller
             $query->where('status', 'LIKE', '%' . $request->status . '%');
         }
 
+        if ($request->resi) {
+            $query->where('resi', 'LIKE', '%' . $request->resi . '%');
+        }
+
         if ($request->tanggal) {
             $query->whereDate('created_at', $request->tanggal);
+        }
+
+        if ($request->tanggal_sampai) {
+            $query->whereDate('updated_at', $request->tanggal_sampai)
+                  ->where('status', 'SELESAI');
         }
 
         $pesanan = $query->latest()->paginate(10);
 
         return view('admin.pesanan.index', compact('pesanan'));
+    }
+
+    public function show($id)
+    {
+        $pesanan = Pesanan::with(['sopir.kendaraan', 'checkpoints' => function($q) {
+            $q->orderBy('created_at', 'desc');
+        }])->findOrFail($id);
+
+        return view('admin.pesanan.show', compact('pesanan'));
     }
 
     public function updateStatusForm($id)

@@ -67,6 +67,5 @@ Route::middleware([AdminMiddleware::class])
         | RESOURCE PALING BAWAH
         |--------------------------------------
         */
-        Route::resource('/pesanan', PesananController::class)
-            ->except(['show']);
+        Route::resource('/pesanan', PesananController::class);
     });
