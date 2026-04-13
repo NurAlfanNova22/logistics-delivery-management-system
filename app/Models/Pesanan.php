@@ -20,7 +20,8 @@ class Pesanan extends Model
         'status',
         'status_pengiriman',
         'sopir_id',
-        'kendaraan_id'
+        'kendaraan_id',
+        'total_biaya'
     ];
 
     public function sopir()

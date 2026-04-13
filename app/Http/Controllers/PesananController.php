@@ -25,8 +25,8 @@ class PesananController extends Controller
                 'required',
                 function ($attribute, $value, $fail) {
                     $sopir = \App\Models\Sopir::find($value);
-                    if ($sopir && $sopir->ketersediaan !== 'Tersedia') {
-                        $fail('Sopir yang dipilih sedang ' . $sopir->ketersediaan . '.');
+                    if ($sopir && !$sopir->is_online) {
+                        $fail('Sopir yang dipilih sedang Offline. Menunggu sopir aktif.');
                     }
                 },
             ],

@@ -54,6 +54,15 @@
                             <span class="fw-bold fs-5">{{ $pesanan->berat }} <small class="text-muted fs-6 fw-normal">kg</small></span>
                         </div>
                     </div>
+
+                    <hr class="text-muted opacity-25">
+
+                    <div class="row bg-light rounded pt-3 pb-2 px-1 mx-0 border">
+                        <div class="col-12">
+                            <span class="d-block text-muted small mb-1"><i class="bi bi-cash-coin text-success me-1"></i>Estimasi Tagihan Biaya</span>
+                            <span class="fw-bold fs-4 text-success">Rp {{ number_format($pesanan->total_biaya ?? 0, 0, ',', '.') }}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
 

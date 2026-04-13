@@ -21,7 +21,8 @@ class PesananApiController extends Controller
             'alamat_asal' => 'required',
             'alamat_tujuan' => 'required',
             'jenis_barang' => 'required',
-            'berat' => 'required|integer'
+            'berat' => 'required|integer',
+            'total_biaya' => 'nullable|numeric'
         ]);
 
         $tanggal = date('ymd');
@@ -46,6 +47,7 @@ class PesananApiController extends Controller
             'alamat_tujuan' => $request->alamat_tujuan,
             'jenis_barang' => $request->jenis_barang,
             'berat' => $request->berat,
+            'total_biaya' => $request->total_biaya ?? 0,
             'status' => 'MENUNGGU KONFIRMASI'
         ]);
 
