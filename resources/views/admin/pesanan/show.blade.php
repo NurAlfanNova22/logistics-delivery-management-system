@@ -81,7 +81,7 @@
                                 </div>
                                 <div class="col-6 ps-3">
                                     <span class="d-block text-muted small mb-1">Plat Nomor</span>
-                                    <span class="fw-bold border px-2 py-1 bg-white rounded">{{ $pesanan->kendaraan->plat_nomor }}</span>
+                                    <span class="fw-bold border px-2 py-1 bg-white rounded">{{ $pesanan->kendaraan->no_polisi }}</span>
                                 </div>
                             </div>
                         </div>
