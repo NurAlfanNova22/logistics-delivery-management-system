@@ -22,6 +22,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -50,5 +51,10 @@ class User extends Authenticatable
     public function sopir()
     {
         return $this->hasOne(Sopir::class);
+    }
+
+    public function pesanans()
+    {
+        return $this->hasMany(Pesanan::class);
     }
 }

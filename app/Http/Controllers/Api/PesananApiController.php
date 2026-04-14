@@ -11,7 +11,7 @@ class PesananApiController extends Controller
 {
     public function index()
     {
-        return response()->json(Pesanan::latest()->get());
+        return response()->json(Pesanan::where('user_id', auth()->id())->latest()->get());
     }
 
     public function store(Request $request)
@@ -41,6 +41,7 @@ class PesananApiController extends Controller
         $resi = 'LEX' . $tanggal . $newNumber;
 
         $pesanan = Pesanan::create([
+            'user_id' => auth()->id(),
             'resi' => $resi,
             'nama_pabrik' => $request->nama_pabrik,
             'alamat_asal' => $request->alamat_asal,
@@ -103,6 +104,7 @@ class PesananApiController extends Controller
 
         if ($pesanan->status_pengiriman == 'MENUNGGU PICKUP') {
             $pesanan->status_pengiriman = 'DALAM PERJALANAN';
+            $pesanan->tanggal_dikirim = now();
         } elseif ($pesanan->status_pengiriman == 'DALAM PERJALANAN') {
             $pesanan->status_pengiriman = 'PESANAN TELAH DIKIRIM';
         }

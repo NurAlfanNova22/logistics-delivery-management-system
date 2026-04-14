@@ -25,12 +25,20 @@ class Pesanan extends Model
         'status_pembayaran',
         'snap_token',
         'payment_url',
-        'tanggal_selesai'
+        'tanggal_selesai',
+        'user_id',
+        'tanggal_dikirim'
     ];
 
     protected $casts = [
         'tanggal_selesai' => 'datetime',
+        'tanggal_dikirim' => 'datetime',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function sopir()
     {

@@ -8,6 +8,7 @@ use App\Http\Controllers\PesananController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\LaporanController;
+use App\Http\Controllers\Admin\CustomerController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,6 +42,10 @@ Route::middleware([AdminMiddleware::class])
 
         Route::resource('/sopir', SopirController::class);
         Route::resource('/kendaraan', KendaraanController::class);
+
+        Route::get('/customer', [CustomerController::class, 'index'])->name('admin.customer.index');
+        Route::get('/customer/{id}', [CustomerController::class, 'show'])->name('admin.customer.show');
+        Route::delete('/customer/{id}', [CustomerController::class, 'destroy'])->name('admin.customer.destroy');
 
         /*
         |--------------------------------------
