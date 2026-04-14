@@ -67,8 +67,12 @@ class PesananController extends Controller
         }
 
         if ($request->tanggal_sampai) {
-            $query->whereDate('updated_at', $request->tanggal_sampai)
+            $query->whereDate('tanggal_selesai', $request->tanggal_sampai)
                   ->where('status', 'SELESAI');
+        }
+
+        if ($request->status_pembayaran) {
+            $query->where('status_pembayaran', $request->status_pembayaran);
         }
 
         $pesanan = $query->latest()->paginate(10);
@@ -99,6 +103,11 @@ class PesananController extends Controller
 
         $pesanan = Pesanan::findOrFail($id);
         $pesanan->status = $request->status;
+
+        if ($request->status == 'SELESAI' && !$pesanan->tanggal_selesai) {
+            $pesanan->tanggal_selesai = now();
+        }
+
         $pesanan->save();
 
         return redirect()->route('pesanan.index')

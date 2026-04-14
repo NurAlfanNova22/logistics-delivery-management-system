@@ -21,6 +21,15 @@
                 </select>
             </div>
 
+            <div class="input-group input-group-sm" style="width: 200px;">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-cash-coin text-muted"></i></span>
+                <select name="status_pembayaran" onchange="this.form.submit()" class="form-select border-start-0">
+                    <option value="">Semua Pembayaran</option>
+                    <option value="BELUM DIBAYAR" {{ request('status_pembayaran') == 'BELUM DIBAYAR' ? 'selected' : '' }}>Belum Bayar</option>
+                    <option value="SUDAH DIBAYAR" {{ request('status_pembayaran') == 'SUDAH DIBAYAR' ? 'selected' : '' }}>Sudah Bayar / Lunas</option>
+                </select>
+            </div>
+
             <div class="input-group input-group-sm" style="width: 210px;">
                 <span class="input-group-text bg-light border-end-0" title="Tanggal Pembuatan Pesanan"><i class="bi bi-calendar3 text-muted"></i> Tgl Pesan</span>
                 <input type="date" name="tanggal" value="{{ request('tanggal') }}" onchange="this.form.submit()" class="form-control border-start-0">

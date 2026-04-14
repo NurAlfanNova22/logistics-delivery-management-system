@@ -119,6 +119,7 @@ class PesananApiController extends Controller
     {
         $pesanan = Pesanan::findOrFail($id);
         $pesanan->status = 'SELESAI';
+        $pesanan->tanggal_selesai = now();
         $pesanan->save();
 
         return response()->json([

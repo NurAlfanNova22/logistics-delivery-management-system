@@ -29,6 +29,17 @@
                         </div>
                     </div>
 
+                    @if($pesanan->tanggal_selesai)
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="bg-success bg-opacity-10 border border-success border-opacity-25 rounded p-2 d-flex justify-content-between align-items-center">
+                                <span class="text-success fw-semibold small"><i class="bi bi-check-circle-fill me-1"></i> Pesanan Selesai pada</span>
+                                <span class="text-success fw-bold small">{{ $pesanan->tanggal_selesai->format('d F Y, H:i') }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     <hr class="text-muted opacity-25">
 
                     <div class="row mb-3">

@@ -24,7 +24,12 @@ class Pesanan extends Model
         'total_biaya',
         'status_pembayaran',
         'snap_token',
-        'payment_url'
+        'payment_url',
+        'tanggal_selesai'
+    ];
+
+    protected $casts = [
+        'tanggal_selesai' => 'datetime',
     ];
 
     public function sopir()
