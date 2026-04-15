@@ -29,10 +29,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/pesanan/{id}/selesaikan', [PesananApiController::class, 'selesaikanPesanan']);
     Route::post('/pesanan/{id}/batal', [PesananApiController::class, 'batalkanPesanan']);
     
+    Route::put('/user/profile', [AuthController::class, 'updateProfile']);
     Route::post('/logout', [AuthController::class, 'logout']);
 });
 
 // Driver Routes
+Route::put('/driver/profile/{id}', [AuthController::class, 'updateDriverProfile']);
 Route::get('/driver/orders/{sopir_id}', [PesananApiController::class, 'driverOrders']);
 Route::post('/driver/update-status/{id}', [PesananApiController::class, 'updateStatusPengiriman']);
 Route::post('/driver/add-checkpoint', [PesananApiController::class, 'addCheckpoint']);
