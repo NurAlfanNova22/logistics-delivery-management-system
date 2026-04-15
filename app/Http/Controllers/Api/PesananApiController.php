@@ -53,33 +53,6 @@ class PesananApiController extends Controller
             'status_pembayaran' => 'BELUM DIBAYAR'
         ]);
 
-        if ($pesanan->total_biaya > 0) {
-            \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY', 'SB-Mid-server-x...');
-            \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
-            \Midtrans\Config::$isSanitized = true;
-            \Midtrans\Config::$is3ds = true;
-
-            $params = [
-                'transaction_details' => [
-                    'order_id' => $resi . '-' . time(),
-                    'gross_amount' => $pesanan->total_biaya,
-                ],
-                'customer_details' => [
-                    'first_name' => $request->nama_pabrik,
-                ]
-            ];
-
-            try {
-                $transaction = \Midtrans\Snap::createTransaction($params);
-                $pesanan->update([
-                    'snap_token' => $transaction->token,
-                    'payment_url' => $transaction->redirect_url
-                ]);
-            } catch (\Exception $e) {
-                // Log or ignore gracefully
-            }
-        }
-
         return response()->json($pesanan);
     }
 
@@ -107,6 +80,32 @@ class PesananApiController extends Controller
             $pesanan->tanggal_dikirim = now();
         } elseif ($pesanan->status_pengiriman == 'DALAM PERJALANAN') {
             $pesanan->status_pengiriman = 'PESANAN TELAH DIKIRIM';
+            
+            // Generate Midtrans Token only if not already generated & biaya > 0
+            if ($pesanan->total_biaya > 0 && !$pesanan->snap_token) {
+                \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY', 'SB-Mid-server-x...');
+                \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+                \Midtrans\Config::$isSanitized = true;
+                \Midtrans\Config::$is3ds = true;
+
+                $params = [
+                    'transaction_details' => [
+                        'order_id' => $pesanan->resi . '-' . time(),
+                        'gross_amount' => $pesanan->total_biaya,
+                    ],
+                    'customer_details' => [
+                        'first_name' => $pesanan->nama_pabrik,
+                    ]
+                ];
+
+                try {
+                    $transaction = \Midtrans\Snap::createTransaction($params);
+                    $pesanan->snap_token = $transaction->token;
+                    $pesanan->payment_url = $transaction->redirect_url;
+                } catch (\Exception $e) {
+                    // Log or ignore gracefully
+                }
+            }
         }
 
         $pesanan->save();
@@ -120,6 +119,13 @@ class PesananApiController extends Controller
     public function selesaikanPesanan($id)
     {
         $pesanan = Pesanan::findOrFail($id);
+
+        if ($pesanan->total_biaya > 0 && strtoupper($pesanan->status_pembayaran) != 'SUDAH DIBAYAR') {
+            return response()->json([
+                'message' => 'Pesanan belum dibayar lunas. Harap lakukan pembayaran terlebih dahulu.',
+            ], 400);
+        }
+
         $pesanan->status = 'SELESAI';
         $pesanan->tanggal_selesai = now();
         $pesanan->save();
