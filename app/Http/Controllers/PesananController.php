@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\Pesanan;
 use App\Models\Sopir;
 use App\Models\Kendaraan;
+use App\Services\FirebaseService;
 
 class PesananController extends Controller
 {
@@ -45,6 +46,18 @@ class PesananController extends Controller
         $pesanan->status_pengiriman = 'MENUNGGU PICKUP';
 
         $pesanan->save();
+
+        try {
+            $db = app(FirebaseService::class)->database();
+            $db->getReference('notifications_driver/' . $pesanan->sopir_id)->push([
+                'title' => 'Pesanan Baru! 🚛',
+                'body' => 'Pengiriman baru (Resi: '.$pesanan->resi.') tujuan ke ' . $pesanan->alamat_tujuan . ' sudah ditugaskan kepada Anda.',
+                'resi' => $pesanan->resi,
+                'timestamp' => now()->timestamp * 1000,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Firebase Notification Error: ' . $e->getMessage());
+        }
 
         return redirect()->route('pesanan.index')
             ->with('success','Pesanan berhasil di-assign');
