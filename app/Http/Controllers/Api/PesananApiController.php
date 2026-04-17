@@ -73,49 +73,59 @@ class PesananApiController extends Controller
 
     public function updateStatusPengiriman($id)
     {
-        $pesanan = Pesanan::findOrFail($id);
+        try {
+            $pesanan = Pesanan::findOrFail($id);
+            $statusSekarang = strtoupper($pesanan->status_pengiriman ?? '');
 
-        if ($pesanan->status_pengiriman == 'MENUNGGU PICKUP') {
-            $pesanan->status_pengiriman = 'DALAM PERJALANAN';
-            $pesanan->tanggal_dikirim = \Illuminate\Support\Carbon::now();
-        } elseif ($pesanan->status_pengiriman == 'DALAM PERJALANAN') {
-            $pesanan->status_pengiriman = 'PESANAN TELAH DIKIRIM';
-            $pesanan->status = 'SELESAI';
-            $pesanan->tanggal_selesai = \Illuminate\Support\Carbon::now();
-            
-            // Generate Midtrans Token only if not already generated & biaya > 0
-            if ($pesanan->total_biaya > 0 && !$pesanan->snap_token) {
-                \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY', 'SB-Mid-server-x...');
-                \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
-                \Midtrans\Config::$isSanitized = true;
-                \Midtrans\Config::$is3ds = true;
+            if ($statusSekarang == 'MENUNGGU PICKUP' || $statusSekarang == '') {
+                $pesanan->status_pengiriman = 'DALAM PERJALANAN';
+                $pesanan->tanggal_dikirim = \Illuminate\Support\Carbon::now();
+            } elseif ($statusSekarang == 'DALAM PERJALANAN') {
+                $pesanan->status_pengiriman = 'PESANAN TELAH DIKIRIM';
+                $pesanan->status = 'SELESAI';
+                $pesanan->tanggal_selesai = \Illuminate\Support\Carbon::now();
+                
+                // Generate Midtrans Token only if not already generated & biaya > 0
+                if ($pesanan->total_biaya > 0 && !$pesanan->snap_token) {
+                    try {
+                        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY', 'SB-Mid-server-x...');
+                        \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+                        \Midtrans\Config::$isSanitized = true;
+                        \Midtrans\Config::$is3ds = true;
 
-                $params = [
-                    'transaction_details' => [
-                        'order_id' => $pesanan->resi . '-' . time(),
-                        'gross_amount' => $pesanan->total_biaya,
-                    ],
-                    'customer_details' => [
-                        'first_name' => $pesanan->nama_pabrik,
-                    ]
-                ];
+                        $params = [
+                            'transaction_details' => [
+                                'order_id' => $pesanan->resi . '-' . time(),
+                                'gross_amount' => $pesanan->total_biaya,
+                            ],
+                            'customer_details' => [
+                                'first_name' => $pesanan->nama_pabrik,
+                            ]
+                        ];
 
-                try {
-                    $transaction = \Midtrans\Snap::createTransaction($params);
-                    $pesanan->snap_token = $transaction->token;
-                    $pesanan->payment_url = $transaction->redirect_url;
-                } catch (\Exception $e) {
-                    // Log or ignore gracefully
+                        $transaction = \Midtrans\Snap::createTransaction($params);
+                        $pesanan->snap_token = $transaction->token;
+                        $pesanan->payment_url = $transaction->redirect_url;
+                    } catch (\Exception $e) {
+                        \Log::error('Midtrans Error: ' . $e->getMessage());
+                    }
                 }
             }
+
+            $pesanan->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Status pengiriman berhasil diupdate',
+                'data' => $pesanan
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Update Status Error: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal update status: ' . $e->getMessage()
+            ], 500);
         }
-
-        $pesanan->save();
-
-        return response()->json([
-            'message' => 'Status pengiriman berhasil diupdate',
-            'data' => $pesanan
-        ]);
     }
 
     public function selesaikanPesanan($id)
