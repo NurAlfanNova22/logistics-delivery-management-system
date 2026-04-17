@@ -228,12 +228,9 @@ class PesananApiController extends Controller
 
         return response()->json([
             'status' => true,
-            'resi' => $pesanan->resi,
-            'nama_pabrik' => $pesanan->nama_pabrik,
-            'asal' => $pesanan->alamat_asal,
-            'tujuan' => $pesanan->alamat_tujuan,
             'status_pengiriman' => $pesanan->status_pengiriman,
-            'progress' => array_reverse($progress) // Newest first like Shopee
+            'progress' => array_reverse($progress),
+            'pesanan' => $pesanan
         ]);
     }
 
