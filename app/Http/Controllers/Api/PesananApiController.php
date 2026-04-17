@@ -80,6 +80,8 @@ class PesananApiController extends Controller
             $pesanan->tanggal_dikirim = now();
         } elseif ($pesanan->status_pengiriman == 'DALAM PERJALANAN') {
             $pesanan->status_pengiriman = 'PESANAN TELAH DIKIRIM';
+            $pesanan->status = 'SELESAI';
+            $pesanan->tanggal_selesai = now();
             
             // Generate Midtrans Token only if not already generated & biaya > 0
             if ($pesanan->total_biaya > 0 && !$pesanan->snap_token) {
