@@ -88,25 +88,29 @@ class PesananApiController extends Controller
                 // Generate Midtrans Token only if not already generated & biaya > 0
                 if ($pesanan->total_biaya > 0 && !$pesanan->snap_token) {
                     try {
-                        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY', 'SB-Mid-server-x...');
-                        \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
-                        \Midtrans\Config::$isSanitized = true;
-                        \Midtrans\Config::$is3ds = true;
+                        if (class_exists('\Midtrans\Config')) {
+                            \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY', 'SB-Mid-server-x...');
+                            \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+                            \Midtrans\Config::$isSanitized = true;
+                            \Midtrans\Config::$is3ds = true;
 
-                        $params = [
-                            'transaction_details' => [
-                                'order_id' => $pesanan->resi . '-' . time(),
-                                'gross_amount' => $pesanan->total_biaya,
-                            ],
-                            'customer_details' => [
-                                'first_name' => $pesanan->nama_pabrik,
-                            ]
-                        ];
+                            $params = [
+                                'transaction_details' => [
+                                    'order_id' => $pesanan->resi . '-' . time(),
+                                    'gross_amount' => $pesanan->total_biaya,
+                                ],
+                                'customer_details' => [
+                                    'first_name' => $pesanan->nama_pabrik,
+                                ]
+                            ];
 
-                        $transaction = \Midtrans\Snap::createTransaction($params);
-                        $pesanan->snap_token = $transaction->token;
-                        $pesanan->payment_url = $transaction->redirect_url;
-                    } catch (\Exception $e) {
+                            $transaction = \Midtrans\Snap::createTransaction($params);
+                            $pesanan->snap_token = $transaction->token;
+                            $pesanan->payment_url = $transaction->redirect_url;
+                        } else {
+                            \Log::warning('Midtrans Library not found on this server.');
+                        }
+                    } catch (\Throwable $e) {
                         \Log::error('Midtrans Error: ' . $e->getMessage());
                     }
                 }
@@ -119,11 +123,12 @@ class PesananApiController extends Controller
                 'message' => 'Status pengiriman berhasil diupdate',
                 'data' => $pesanan
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             \Log::error('Update Status Error: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal update status: ' . $e->getMessage()
+                'message' => 'Gagal update status: ' . $e->getMessage(),
+                'debug' => $e->getMessage() // Menampilkan pesan error asli untuk debugging
             ], 500);
         }
     }
