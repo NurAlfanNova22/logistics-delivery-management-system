@@ -82,8 +82,6 @@ class PesananApiController extends Controller
                 $pesanan->tanggal_dikirim = \Illuminate\Support\Carbon::now();
             } elseif ($statusSekarang == 'DALAM PERJALANAN') {
                 $pesanan->status_pengiriman = 'PESANAN TELAH DIKIRIM';
-                $pesanan->status = 'SELESAI';
-                $pesanan->tanggal_selesai = \Illuminate\Support\Carbon::now();
                 
                 // Generate Midtrans Token only if not already generated & biaya > 0
                 if ($pesanan->total_biaya > 0 && !$pesanan->snap_token) {
@@ -274,12 +272,18 @@ class PesananApiController extends Controller
         $tahun = now()->year;
 
         $hariIni = Pesanan::where('sopir_id', $sopir_id)
-            ->where('status', 'SELESAI')
+            ->where(function($q) {
+                $q->where('status', 'SELESAI')
+                  ->orWhere('status_pengiriman', 'PESANAN TELAH DIKIRIM');
+            })
             ->whereDate('updated_at', $today)
             ->count();
 
         $bulanIni = Pesanan::where('sopir_id', $sopir_id)
-            ->where('status', 'SELESAI')
+            ->where(function($q) {
+                $q->where('status', 'SELESAI')
+                  ->orWhere('status_pengiriman', 'PESANAN TELAH DIKIRIM');
+            })
             ->whereMonth('updated_at', $bulan)
             ->whereYear('updated_at', $tahun)
             ->count();
