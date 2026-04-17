@@ -77,11 +77,11 @@ class PesananApiController extends Controller
 
         if ($pesanan->status_pengiriman == 'MENUNGGU PICKUP') {
             $pesanan->status_pengiriman = 'DALAM PERJALANAN';
-            $pesanan->tanggal_dikirim = now();
+            $pesanan->tanggal_dikirim = \Illuminate\Support\Carbon::now();
         } elseif ($pesanan->status_pengiriman == 'DALAM PERJALANAN') {
             $pesanan->status_pengiriman = 'PESANAN TELAH DIKIRIM';
             $pesanan->status = 'SELESAI';
-            $pesanan->tanggal_selesai = now();
+            $pesanan->tanggal_selesai = \Illuminate\Support\Carbon::now();
             
             // Generate Midtrans Token only if not already generated & biaya > 0
             if ($pesanan->total_biaya > 0 && !$pesanan->snap_token) {
@@ -129,7 +129,7 @@ class PesananApiController extends Controller
         }
 
         $pesanan->status = 'SELESAI';
-        $pesanan->tanggal_selesai = now();
+        $pesanan->tanggal_selesai = \Illuminate\Support\Carbon::now();
         $pesanan->save();
 
         return response()->json([
