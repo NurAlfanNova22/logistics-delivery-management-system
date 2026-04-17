@@ -312,6 +312,13 @@ class PesananApiController extends Controller
     public function paymentCallback(Request $request)
     {
         try {
+            $orderId = $request->order_id;
+
+            // 1. Handle Test Notification from Midtrans Sandbox Dashboard
+            if (isset($orderId) && (str_contains($orderId, 'test') || str_contains($orderId, 'M882436788'))) {
+                return response()->json(['message' => 'Test/Simulation Notification Handled']);
+            }
+
             if (!class_exists('\Midtrans\Config')) {
                 return response()->json(['message' => 'Library Midtrans missing'], 500);
             }
