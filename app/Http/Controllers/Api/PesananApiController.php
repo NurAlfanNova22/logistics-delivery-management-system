@@ -122,6 +122,10 @@ class PesananApiController extends Controller
                     ],
                     'customer_details' => [
                         'first_name' => $pesanan->nama_pabrik,
+                    ],
+                    // Tambahkan Callback URL secara eksplisit
+                    'callbacks' => [
+                        'finish' => 'https://lancarekspedisi.satcloud.tech/api/payment/callback'
                     ]
                 ];
 
@@ -307,10 +311,14 @@ class PesananApiController extends Controller
 
     public function paymentCallback(Request $request)
     {
-        \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY', 'SB-Mid-server-x...');
-        \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
-        
         try {
+            if (!class_exists('\Midtrans\Config')) {
+                return response()->json(['message' => 'Library Midtrans missing'], 500);
+            }
+
+            \Midtrans\Config::$serverKey = env('MIDTRANS_SERVER_KEY', 'SB-Mid-server-x...');
+            \Midtrans\Config::$isProduction = env('MIDTRANS_IS_PRODUCTION', false);
+            
             $notif = new \Midtrans\Notification();
             $transactionStatus = $notif->transaction_status;
             $orderId = $notif->order_id;
@@ -324,12 +332,16 @@ class PesananApiController extends Controller
             if ($transactionStatus == 'capture' || $transactionStatus == 'settlement') {
                 $pesanan->status_pembayaran = 'SUDAH DIBAYAR';
                 $pesanan->save();
+                \Log::info("Payment SUCCESS for order: $orderId");
             } else if ($transactionStatus == 'cancel' || $transactionStatus == 'deny' || $transactionStatus == 'expire') {
-                // Biarkan tetap "BELUM DIBAYAR" atau buat status terpisah jika perlu
+                $pesanan->status_pembayaran = 'GAGAL / EXPIRED';
+                $pesanan->save();
+                \Log::info("Payment FAILED for order: $orderId");
             }
 
             return response()->json(['message' => 'Callback Handled']);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            \Log::error('Callback Error: ' . $e->getMessage());
             return response()->json(['message' => $e->getMessage()], 500);
         }
     }
