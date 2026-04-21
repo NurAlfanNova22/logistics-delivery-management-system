@@ -125,7 +125,7 @@ class PesananApiController extends Controller
                     ],
                     // Tambahkan Callback URL secara eksplisit
                     'callbacks' => [
-                        'finish' => 'https://lancarekspedisi.satcloud.tech/api/payment/callback'
+                        'finish' => 'lancarekspedisi://payment_finish'
                     ]
                 ];
 
