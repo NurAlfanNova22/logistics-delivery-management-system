@@ -59,7 +59,7 @@
             <table class="table mb-0">
                 <thead>
                     <tr>
-                        <th class="ps-4">ID</th>
+                        <th class="ps-4">No.</th>
                         <th>Tanggal</th>
                         <th>Resi</th>
                         <th>Pengirim</th>
@@ -72,7 +72,7 @@
                 <tbody>
                     @forelse($pesanan as $item)
                     <tr>
-                        <td class="ps-4 text-muted">{{ $item->id }}</td>
+                        <td class="ps-4 text-muted">{{ ($pesanan->currentPage() - 1) * $pesanan->perPage() + $loop->iteration }}</td>
                         <td>
                             <span class="fw-semibold" style="font-size:13px">{{ $item->created_at->format('d M Y') }}</span><br>
                             <small class="text-muted">{{ $item->created_at->format('H:i') }}</small>
