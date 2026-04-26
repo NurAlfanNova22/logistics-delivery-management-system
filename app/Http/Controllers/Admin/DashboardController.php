@@ -20,6 +20,21 @@ class DashboardController extends Controller
         $totalSopir = Sopir::count();
         $totalKendaraan = Kendaraan::count();
 
+        // Statistik Hari Ini & Bulan Ini
+        $pesananHariIni = Pesanan::whereDate('created_at', Carbon::today())->count();
+        $pesananBulanIni = Pesanan::whereMonth('created_at', Carbon::now()->month)
+            ->whereYear('created_at', Carbon::now()->year)
+            ->count();
+        
+        $pendapatanHariIni = Pesanan::whereDate('created_at', Carbon::today())
+            ->where('status_pembayaran', 'SUDAH DIBAYAR')
+            ->sum('total_biaya');
+            
+        $pendapatanBulanIni = Pesanan::whereMonth('created_at', Carbon::now()->month)
+            ->whereYear('created_at', Carbon::now()->year)
+            ->where('status_pembayaran', 'SUDAH DIBAYAR')
+            ->sum('total_biaya');
+
         // Data Grafik: Pemasukan 7 Hari Terakhir
         $pemasukan7Hari = [];
         for ($i = 6; $i >= 0; $i--) {
@@ -68,7 +83,11 @@ class DashboardController extends Controller
             'pemasukan7Hari',
             'statusComposition',
             'topDrivers',
-            'topCustomers'
+            'topCustomers',
+            'pesananHariIni',
+            'pesananBulanIni',
+            'pendapatanHariIni',
+            'pendapatanBulanIni'
         ));
     }
 }

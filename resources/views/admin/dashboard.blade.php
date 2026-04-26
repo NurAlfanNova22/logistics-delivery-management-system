@@ -62,7 +62,51 @@
 
 </div>
 
-<div class="row g-4">
+<div class="row g-4 mt-2">
+    {{-- Performa Hari Ini --}}
+    <div class="col-md-3">
+        <div class="card h-100 border-start border-primary border-4">
+            <div class="card-body p-4">
+                <p class="stat-label mb-1">Pesanan Hari Ini</p>
+                <div class="d-flex align-items-center gap-2">
+                    <h3 class="stat-value">{{ $pesananHariIni }}</h3>
+                    <span class="badge text-bg-light text-primary">Hari Ini</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 border-start border-success border-4">
+            <div class="card-body p-4">
+                <p class="stat-label mb-1">Pendapatan Hari Ini</p>
+                <h4 class="fw-bold mb-0 text-success">Rp {{ number_format($pendapatanHariIni, 0, ',', '.') }}</h4>
+            </div>
+        </div>
+    </div>
+
+    {{-- Performa Bulan Ini --}}
+    <div class="col-md-3">
+        <div class="card h-100 border-start border-info border-4">
+            <div class="card-body p-4">
+                <p class="stat-label mb-1">Pesanan Bulan Ini</p>
+                <div class="d-flex align-items-center gap-2">
+                    <h3 class="stat-value">{{ $pesananBulanIni }}</h3>
+                    <span class="badge text-bg-light text-info">Bulan Ini</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card h-100 border-start border-warning border-4">
+            <div class="card-body p-4">
+                <p class="stat-label mb-1">Pendapatan Bulan Ini</p>
+                <h4 class="fw-bold mb-0 text-warning">Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-2">
     <div class="col-md-6">
         <div class="card h-100">
             <div class="card-body d-flex align-items-center gap-3 p-4">
