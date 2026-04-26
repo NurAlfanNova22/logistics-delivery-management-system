@@ -111,7 +111,35 @@
                 <h6 class="mb-0 fw-bold text-primary"><i class="bi bi-pie-chart-fill me-2"></i>Komposisi Pesanan</h6>
             </div>
             <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                <canvas id="statusChart"></canvas>
+                <div style="height: 250px; width: 100%;">
+                    <canvas id="statusChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-2">
+    {{-- Grafik Performa Sopir --}}
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom py-3">
+                <h6 class="mb-0 fw-bold text-primary"><i class="bi bi-person-check-fill me-2"></i>Top 5 Sopir (Selesai)</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="driverChart" style="min-height: 250px;"></canvas>
+            </div>
+        </div>
+    </div>
+
+    {{-- Grafik Customer Teraktif --}}
+    <div class="col-lg-6">
+        <div class="card shadow-sm border-0 h-100">
+            <div class="card-header bg-white border-bottom py-3">
+                <h6 class="mb-0 fw-bold text-primary"><i class="bi bi-building-fill me-2"></i>Top 5 Customer</h6>
+            </div>
+            <div class="card-body">
+                <canvas id="customerChart" style="min-height: 250px;"></canvas>
             </div>
         </div>
     </div>
@@ -170,9 +198,63 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: false,
             cutout: '70%',
             plugins: {
                 legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15, font: { size: 11 } } }
+            }
+        }
+    });
+
+    // 3. Driver Performance Chart
+    const driverCtx = document.getElementById('driverChart').getContext('2d');
+    const driverData = @json($topDrivers);
+
+    new Chart(driverCtx, {
+        type: 'bar',
+        data: {
+            labels: driverData.map(d => d.nama),
+            datasets: [{
+                label: 'Pesanan Selesai',
+                data: driverData.map(d => d.total),
+                backgroundColor: '#2563EB',
+                borderRadius: 6
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                x: { beginAtZero: true, grid: { display: false } },
+                y: { grid: { display: false } }
+            }
+        }
+    });
+
+    // 4. Top Customer Chart
+    const customerCtx = document.getElementById('customerChart').getContext('2d');
+    const customerData = @json($topCustomers);
+
+    new Chart(customerCtx, {
+        type: 'bar',
+        data: {
+            labels: customerData.map(d => d.nama_pabrik),
+            datasets: [{
+                label: 'Total Pesanan',
+                data: customerData.map(d => d.total),
+                backgroundColor: '#9333EA',
+                borderRadius: 6
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
+                x: { grid: { display: false } }
             }
         }
     });

@@ -42,6 +42,22 @@ class DashboardController extends Controller
             'Dibatalkan' => Pesanan::where('status', 'DIBATALKAN')->count(),
         ];
 
+        // Data Grafik: Top 5 Sopir (Berdasarkan jumlah pesanan selesai)
+        $topDrivers = Sopir::select('sopirs.nama', DB::raw('count(pesanans.id) as total'))
+            ->join('pesanans', 'sopirs.id', '=', 'pesanans.sopir_id')
+            ->where('pesanans.status', 'SELESAI')
+            ->groupBy('sopirs.id', 'sopirs.nama')
+            ->orderBy('total', 'desc')
+            ->limit(5)
+            ->get();
+
+        // Data Grafik: Top 5 Customer (Berdasarkan jumlah pesanan)
+        $topCustomers = Pesanan::select('nama_pabrik', DB::raw('count(id) as total'))
+            ->groupBy('nama_pabrik')
+            ->orderBy('total', 'desc')
+            ->limit(5)
+            ->get();
+
         return view('admin.dashboard', compact(
             'totalPesanan',
             'aktif',
@@ -50,7 +66,9 @@ class DashboardController extends Controller
             'totalSopir',
             'totalKendaraan',
             'pemasukan7Hari',
-            'statusComposition'
+            'statusComposition',
+            'topDrivers',
+            'topCustomers'
         ));
     }
 }
