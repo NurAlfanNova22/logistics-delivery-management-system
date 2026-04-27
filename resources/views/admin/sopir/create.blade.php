@@ -14,7 +14,7 @@
                     <p class="text-muted small">Lengkapi data di bawah untuk menambahkan driver baru ke sistem.</p>
                 </div>
 
-                <form method="POST" action="/admin/sopir">
+                <form method="POST" action="/admin/sopir" enctype="multipart/form-data">
                     @csrf
 
                     <div class="row g-3">
@@ -53,6 +53,12 @@
                                 </option>
                                 @endforeach
                             </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small text-muted">Foto Profil (Opsional)</label>
+                            <input type="file" class="form-control" name="foto" accept="image/*">
+                            <div class="form-text small">Format: JPG, PNG. Maksimal 2MB.</div>
                         </div>
 
                         <div class="col-12 mt-4">

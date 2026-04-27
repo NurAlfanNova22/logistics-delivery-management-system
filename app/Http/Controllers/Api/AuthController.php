@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 class AuthController extends Controller
 {
@@ -55,14 +56,21 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|min:6'
+            'password' => 'required|min:6',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
+
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            $fotoPath = $request->file('foto')->store('customer', 'public');
+        }
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => 'customer'
+            'role' => 'customer',
+            'foto' => $fotoPath
         ]);
 
         $token = $user->createToken('flutter_token')->plainTextToken;
@@ -120,12 +128,22 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
-        $user->update([
+        $data = [
             'name' => $request->name,
             'email' => $request->email,
-        ]);
+        ];
+
+        if ($request->hasFile('foto')) {
+            if ($user->foto) {
+                Storage::disk('public')->delete($user->foto);
+            }
+            $data['foto'] = $request->file('foto')->store('customer', 'public');
+        }
+
+        $user->update($data);
 
         return response()->json([
             'message' => 'Profil berhasil diperbarui',
@@ -136,20 +154,36 @@ class AuthController extends Controller
     public function updateDriverProfile(Request $request, $id)
     {
         $user = User::findOrFail($id);
+        $sopir = $user->sopir;
 
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
+        // Update User
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
         ]);
 
+        // Update Sopir Photo if exists
+        if ($request->hasFile('foto')) {
+            if ($sopir && $sopir->foto) {
+                Storage::disk('public')->delete($sopir->foto);
+            }
+            if ($sopir) {
+                $sopir->update([
+                    'foto' => $request->file('foto')->store('sopir', 'public')
+                ]);
+            }
+        }
+
         return response()->json([
             'message' => 'Profil sopir berhasil diperbarui',
-            'user' => $user
+            'user' => $user,
+            'sopir' => $user->sopir
         ]);
     }
 }

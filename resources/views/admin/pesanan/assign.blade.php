@@ -26,7 +26,7 @@
                                     <option value="">-- Pilih Sopir --</option>
                                     @foreach($sopir as $s)
                                         @php
-                                            $disabled = $s->ketersediaan !== 'Tersedia' ? 'disabled' : '';
+                                            $disabled = $s->ketersediaan === 'Offline' ? 'disabled' : '';
                                             $statusText = $s->ketersediaan !== 'Tersedia' ? ' (' . $s->ketersediaan . ')' : '';
                                         @endphp
                                         <option value="{{ $s->id }}" {{ $disabled }}>{{ $s->nama }}{{ $statusText }}</option>

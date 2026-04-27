@@ -12,7 +12,8 @@ class Sopir extends Model
         'nama',
         'no_hp',
         'alamat',
-        'is_online'
+        'is_online',
+        'foto'
     ];
     
     public function kendaraan()

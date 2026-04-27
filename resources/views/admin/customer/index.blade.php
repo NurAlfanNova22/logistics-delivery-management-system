@@ -23,8 +23,12 @@
                     <tr>
                         <td class="ps-4">
                             <div class="d-flex align-items-center gap-3">
-                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
-                                    <i class="bi bi-person-fill"></i>
+                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center overflow-hidden" style="width: 40px; height: 40px;">
+                                    @if($item->foto)
+                                        <img src="{{ asset('storage/' . $item->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
+                                    @else
+                                        <i class="bi bi-person-fill"></i>
+                                    @endif
                                 </div>
                                 <span class="fw-bold">{{ $item->name }}</span>
                             </div>
@@ -37,9 +41,12 @@
                         </td>
                         <td>{{ $item->created_at->format('d M Y') }}</td>
                         <td class="text-end pe-4">
-                            <div class="btn-group">
+                            <div class="d-flex gap-1 justify-content-end">
                                 <a href="{{ route('admin.customer.show', $item->id) }}" class="btn btn-sm btn-outline-primary" title="Lihat Riwayat">
-                                    <i class="bi bi-eye-fill"></i> Riwayat
+                                    <i class="bi bi-eye-fill"></i>
+                                </a>
+                                <a href="{{ route('admin.customer.edit', $item->id) }}" class="btn btn-sm btn-outline-warning" title="Edit Profil">
+                                    <i class="bi bi-pencil-fill"></i>
                                 </a>
                                 <form action="{{ route('admin.customer.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kustomer ini?')">
                                     @csrf

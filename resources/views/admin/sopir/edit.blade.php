@@ -7,14 +7,18 @@
         <div class="card">
             <div class="card-body p-4">
                 <div class="mb-4 text-center">
-                    <div class="admin-avatar mx-auto mb-3" style="width: 64px; height: 64px; font-size: 24px;">
-                        {{ strtoupper(substr($sopir->nama, 0, 1)) }}
+                    <div class="admin-avatar mx-auto mb-3" style="width: 80px; height: 80px; font-size: 24px; overflow: hidden; border: 2px solid #eee;">
+                        @if($sopir->foto)
+                            <img src="{{ asset('storage/' . $sopir->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
+                        @else
+                            {{ strtoupper(substr($sopir->nama, 0, 1)) }}
+                        @endif
                     </div>
                     <h5 class="fw-bold mb-1">Edit Profil Sopir</h5>
                     <p class="text-muted small">Perbarui data informasi driver dan alokasi kendaraan.</p>
                 </div>
 
-                <form method="POST" action="/admin/sopir/{{ $sopir->id }}">
+                <form method="POST" action="/admin/sopir/{{ $sopir->id }}" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
 
@@ -49,6 +53,12 @@
                                 </option>
                                 @endforeach
                             </select>
+                        </div>
+
+                        <div class="col-12">
+                            <label class="form-label fw-semibold small text-muted">Ganti Foto Profil (Opsional)</label>
+                            <input type="file" class="form-control" name="foto" accept="image/*">
+                            <div class="form-text small">Kosongkan jika tidak ingin mengubah foto.</div>
                         </div>
 
                         <div class="col-12 mt-4">

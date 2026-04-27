@@ -7,6 +7,7 @@ use App\Models\Sopir;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Kendaraan;
+use Illuminate\Support\Facades\Storage;
 
 class SopirController extends Controller
 {
@@ -30,8 +31,14 @@ class SopirController extends Controller
             'email' => 'required|email|unique:users',
             'password' => 'required|min:6',
             'no_hp' => 'required',
-            'alamat' => 'required'
+            'alamat' => 'required',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
+
+        $fotoPath = null;
+        if ($request->hasFile('foto')) {
+            $fotoPath = $request->file('foto')->store('sopir', 'public');
+        }
 
         // buat akun login driver
         $user = User::create([
@@ -47,7 +54,8 @@ class SopirController extends Controller
             'kendaraan_id' => $request->kendaraan_id,
             'nama' => $request->nama,
             'no_hp' => $request->no_hp,
-            'alamat' => $request->alamat
+            'alamat' => $request->alamat,
+            'foto' => $fotoPath
         ]);
 
         return redirect('/admin/sopir')->with('success','Data sopir ditambahkan');
@@ -66,8 +74,24 @@ class SopirController extends Controller
             'nama' => 'required',
             'email' => 'required|email',
             'no_hp' => 'required',
-            'alamat' => 'required'
+            'alamat' => 'required',
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
+
+        $dataSopir = [
+            'nama' => $request->nama,
+            'no_hp' => $request->no_hp,
+            'alamat' => $request->alamat,
+            'kendaraan_id' => $request->kendaraan_id
+        ];
+
+        if ($request->hasFile('foto')) {
+            // Hapus foto lama
+            if ($sopir->foto) {
+                Storage::disk('public')->delete($sopir->foto);
+            }
+            $dataSopir['foto'] = $request->file('foto')->store('sopir', 'public');
+        }
 
         // update user login
         $sopir->user->update([
@@ -76,18 +100,18 @@ class SopirController extends Controller
         ]);
 
         // update data sopir
-        $sopir->update([
-            'nama' => $request->nama,
-            'no_hp' => $request->no_hp,
-            'alamat' => $request->alamat,
-            'kendaraan_id' => $request->kendaraan_id
-        ]);
+        $sopir->update($dataSopir);
 
         return redirect('/admin/sopir')->with('success','Data sopir diupdate');
     }
 
     public function destroy(Sopir $sopir)
     {
+        // Hapus foto jika ada
+        if ($sopir->foto) {
+            Storage::disk('public')->delete($sopir->foto);
+        }
+
         // hapus user yang terkait
         if ($sopir->user) {
             $sopir->user->delete();

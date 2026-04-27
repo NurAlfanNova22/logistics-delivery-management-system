@@ -9,6 +9,7 @@
 <table class="table table-bordered bg-white">
     <tr>
         <th>No</th>
+        <th>Foto</th>
         <th>Nama</th>
         <th>Email</th>
         <th>No HP</th>
@@ -21,7 +22,15 @@
     @foreach($sopirs as $s)
     <tr>
         <td>{{ $loop->iteration }}</td>
-
+        <td>
+            <div style="width: 40px; height: 40px; border-radius: 50%; overflow: hidden; background: #eee; display: flex; align-items: center; justify-content: center;">
+                @if($s->foto)
+                    <img src="{{ asset('storage/' . $s->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
+                @else
+                    <i class="bi bi-person text-muted" style="font-size: 20px;"></i>
+                @endif
+            </div>
+        </td>
         <td>{{ $s->nama }}</td>
 
         <td>{{ $s->user->email ?? '-' }}</td>
