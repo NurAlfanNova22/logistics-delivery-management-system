@@ -1,189 +1,179 @@
 @extends('layouts.admin')
-@section('page-title', 'Dashboard')
+@section('page-title', 'Dashboard Overview')
 
 @section('content')
-<div class="row g-4 mb-4">
+<div class="dashboard-wrapper">
+    {{-- Row 1: Hero Stats --}}
+    <div class="row g-4 mb-4">
+        {{-- Card Pesanan --}}
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="stat-icon-new bg-primary-soft text-primary">
+                            <i class="bi bi-box-seam"></i>
+                        </div>
+                        <div class="text-end">
+                            <p class="text-muted small fw-medium mb-0">Total Pesanan</p>
+                            <h2 class="fw-bold mb-0">{{ number_format($totalPesanan) }}</h2>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-3 pt-3 border-top">
+                        <div class="flex-fill">
+                            <p class="text-muted small mb-0">Hari Ini</p>
+                            <p class="fw-bold text-dark mb-0">+{{ $pesananHariIni }}</p>
+                        </div>
+                        <div class="flex-fill border-start ps-3">
+                            <p class="text-muted small mb-0">Bulan Ini</p>
+                            <p class="fw-bold text-dark mb-0">+{{ $pesananBulanIni }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-    <div class="col-md-3">
-        <div class="card h-100">
-            <div class="card-body d-flex align-items-center gap-3 p-4">
-                <div class="stat-icon" style="background:linear-gradient(135deg,#FB923C,#EA580C)">
-                    <i class="bi bi-box2-fill"></i>
-                </div>
-                <div>
-                    <p class="stat-label">Total Pesanan</p>
-                    <h3 class="stat-value">{{ $totalPesanan }}</h3>
+        {{-- Card Pendapatan --}}
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="stat-icon-new bg-success-soft text-success">
+                            <i class="bi bi-currency-dollar"></i>
+                        </div>
+                        <div class="text-end">
+                            <p class="text-muted small fw-medium mb-0">Pendapatan Lunas</p>
+                            <h2 class="fw-bold mb-0" style="font-size: 1.5rem">Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}</h2>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-3 pt-3 border-top">
+                        <div class="flex-fill">
+                            <p class="text-muted small mb-0">Hari Ini</p>
+                            <p class="fw-bold text-success mb-0">Rp {{ number_format($pendapatanHariIni, 0, ',', '.') }}</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="col-md-3">
-        <div class="card h-100">
-            <div class="card-body d-flex align-items-center gap-3 p-4">
-                <div class="stat-icon" style="background:linear-gradient(135deg,#FCD34D,#D97706)">
-                    <i class="bi bi-clock-fill"></i>
+        {{-- Card Aset --}}
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <div class="card-body p-4">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <div class="stat-icon-new bg-purple-soft text-purple">
+                            <i class="bi bi-truck"></i>
+                        </div>
+                        <div class="text-end">
+                            <p class="text-muted small fw-medium mb-0">Total Aset</p>
+                            <h2 class="fw-bold mb-0">{{ $totalSopir + $totalKendaraan }}</h2>
+                        </div>
+                    </div>
+                    <div class="d-flex gap-3 pt-3 border-top">
+                        <div class="flex-fill">
+                            <p class="text-muted small mb-0">Sopir</p>
+                            <p class="fw-bold text-dark mb-0">{{ $totalSopir }}</p>
+                        </div>
+                        <div class="flex-fill border-start ps-3">
+                            <p class="text-muted small mb-0">Kendaraan</p>
+                            <p class="fw-bold text-dark mb-0">{{ $totalKendaraan }}</p>
+                        </div>
+                    </div>
                 </div>
-                <div>
-                    <p class="stat-label">Menunggu</p>
-                    <h3 class="stat-value">{{ $menunggu }}</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card h-100">
-            <div class="card-body d-flex align-items-center gap-3 p-4">
-                <div class="stat-icon" style="background:linear-gradient(135deg,#60A5FA,#2563EB)">
-                    <i class="bi bi-truck"></i>
-                </div>
-                <div>
-                    <p class="stat-label">Pesanan Aktif</p>
-                    <h3 class="stat-value">{{ $aktif }}</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="col-md-3">
-        <div class="card h-100">
-            <div class="card-body d-flex align-items-center gap-3 p-4">
-                <div class="stat-icon" style="background:linear-gradient(135deg,#4ADE80,#16A34A)">
-                    <i class="bi bi-check-circle-fill"></i>
-                </div>
-                <div>
-                    <p class="stat-label">Selesai</p>
-                    <h3 class="stat-value">{{ $selesai }}</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<div class="row g-4 mt-2">
-    {{-- Performa Hari Ini --}}
-    <div class="col-md-3">
-        <div class="card h-100 border-start border-primary border-4">
-            <div class="card-body p-4">
-                <p class="stat-label mb-1">Pesanan Hari Ini</p>
-                <div class="d-flex align-items-center gap-2">
-                    <h3 class="stat-value">{{ $pesananHariIni }}</h3>
-                    <span class="badge text-bg-light text-primary">Hari Ini</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card h-100 border-start border-success border-4">
-            <div class="card-body p-4">
-                <p class="stat-label mb-1">Pendapatan Hari Ini</p>
-                <h4 class="fw-bold mb-0 text-success">Rp {{ number_format($pendapatanHariIni, 0, ',', '.') }}</h4>
-            </div>
-        </div>
-    </div>
-
-    {{-- Performa Bulan Ini --}}
-    <div class="col-md-3">
-        <div class="card h-100 border-start border-info border-4">
-            <div class="card-body p-4">
-                <p class="stat-label mb-1">Pesanan Bulan Ini</p>
-                <div class="d-flex align-items-center gap-2">
-                    <h3 class="stat-value">{{ $pesananBulanIni }}</h3>
-                    <span class="badge text-bg-light text-info">Bulan Ini</span>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card h-100 border-start border-warning border-4">
-            <div class="card-body p-4">
-                <p class="stat-label mb-1">Pendapatan Bulan Ini</p>
-                <h4 class="fw-bold mb-0 text-warning">Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}</h4>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row g-4 mt-2">
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-body d-flex align-items-center gap-3 p-4">
-                <div class="stat-icon" style="background:linear-gradient(135deg,#C084FC,#9333EA)">
-                    <i class="bi bi-people-fill"></i>
-                </div>
-                <div>
-                    <p class="stat-label">Total Sopir</p>
-                    <h3 class="stat-value">{{ $totalSopir }}</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-6">
-        <div class="card h-100">
-            <div class="card-body d-flex align-items-center gap-3 p-4">
-                <div class="stat-icon" style="background:linear-gradient(135deg,#FB923C,#EA580C)">
-                    <i class="bi bi-truck-front-fill"></i>
-                </div>
-                <div>
-                    <p class="stat-label">Total Kendaraan</p>
-                    <h3 class="stat-value">{{ $totalKendaraan }}</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="row g-4 mt-2">
-    {{-- Grafik Pemasukan --}}
-    <div class="col-lg-8">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white border-bottom py-3">
-                <h6 class="mb-0 fw-bold text-primary"><i class="bi bi-graph-up-arrow me-2"></i>Tren Pemasukan (7 Hari Terakhir)</h6>
-            </div>
-            <div class="card-body">
-                <canvas id="revenueChart" style="min-height: 250px;"></canvas>
             </div>
         </div>
     </div>
 
-    {{-- Grafik Komposisi Status --}}
-    <div class="col-lg-4">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white border-bottom py-3">
-                <h6 class="mb-0 fw-bold text-primary"><i class="bi bi-pie-chart-fill me-2"></i>Komposisi Pesanan</h6>
+    {{-- Row 2: Main Analysis --}}
+    <div class="row g-4 mb-4">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <h5 class="fw-bold mb-0">Tren Pemasukan</h5>
+                    <p class="text-muted small mb-0">Statistik lunas 7 hari terakhir</p>
+                </div>
+                <div class="card-body px-4 pb-4">
+                    <div style="height: 300px;">
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
             </div>
-            <div class="card-body d-flex flex-column align-items-center justify-content-center">
-                <div style="height: 250px; width: 100%;">
-                    <canvas id="statusChart"></canvas>
+        </div>
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm rounded-4 h-100">
+                <div class="card-header bg-transparent border-0 pt-4 px-4">
+                    <h5 class="fw-bold mb-0">Status Pesanan</h5>
+                    <p class="text-muted small mb-0">Komposisi aktif vs selesai</p>
+                </div>
+                <div class="card-body d-flex flex-column align-items-center justify-content-center p-4">
+                    <div style="height: 220px; width: 100%;">
+                        <canvas id="statusChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<div class="row g-4 mt-2">
-    {{-- Grafik Performa Sopir --}}
-    <div class="col-lg-6">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white border-bottom py-3">
-                <h6 class="mb-0 fw-bold text-primary"><i class="bi bi-person-check-fill me-2"></i>Top 5 Sopir (Selesai)</h6>
-            </div>
-            <div class="card-body">
-                <canvas id="driverChart" style="min-height: 250px;"></canvas>
+    {{-- Row 3: Insights & Rankings --}}
+    <div class="row g-4">
+        {{-- Top Drivers List --}}
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">Sopir Teraktif</h5>
+                    <span class="badge bg-light text-dark rounded-pill px-3">Top 5 Selesai</span>
+                </div>
+                <div class="card-body p-4">
+                    <div class="list-group list-group-flush">
+                        @forelse($topDrivers as $index => $driver)
+                        <div class="list-group-item px-0 py-3 border-0 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rank-number bg-light text-muted">{{ $index + 1 }}</div>
+                                <div>
+                                    <h6 class="fw-bold mb-0">{{ $driver->nama }}</h6>
+                                    <small class="text-muted">Driver Berpengalaman</small>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="fw-bold text-primary">{{ $driver->total }}</span>
+                                <small class="text-muted d-block" style="font-size: 10px;">SELESAI</small>
+                            </div>
+                        </div>
+                        @empty
+                        <p class="text-center text-muted py-4">Belum ada data performa</p>
+                        @endforelse
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
 
-    {{-- Grafik Customer Teraktif --}}
-    <div class="col-lg-6">
-        <div class="card shadow-sm border-0 h-100">
-            <div class="card-header bg-white border-bottom py-3">
-                <h6 class="mb-0 fw-bold text-primary"><i class="bi bi-building-fill me-2"></i>Top 5 Customer</h6>
-            </div>
-            <div class="card-body">
-                <canvas id="customerChart" style="min-height: 250px;"></canvas>
+        {{-- Top Customers List --}}
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm rounded-4">
+                <div class="card-header bg-transparent border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
+                    <h5 class="fw-bold mb-0">Pelanggan Teratas</h5>
+                    <span class="badge bg-light text-dark rounded-pill px-3">Total Pesanan</span>
+                </div>
+                <div class="card-body p-4">
+                    <div class="list-group list-group-flush">
+                        @forelse($topCustomers as $index => $customer)
+                        <div class="list-group-item px-0 py-3 border-0 d-flex align-items-center justify-content-between">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="rank-number bg-light text-muted">{{ $index + 1 }}</div>
+                                <div>
+                                    <h6 class="fw-bold mb-0">{{ $customer->nama_pabrik }}</h6>
+                                    <small class="text-muted">Customer Loyal</small>
+                                </div>
+                            </div>
+                            <div class="text-end">
+                                <span class="fw-bold text-purple">{{ $customer->total }}</span>
+                                <small class="text-muted d-block" style="font-size: 10px;">ORDER</small>
+                            </div>
+                        </div>
+                        @empty
+                        <p class="text-center text-muted py-4">Belum ada data transaksi</p>
+                        @endforelse
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -192,7 +182,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // 1. Revenue Chart
+    // 1. Revenue Chart (Area Style)
     const revCtx = document.getElementById('revenueChart').getContext('2d');
     const revenueData = @json($pemasukan7Hari);
     
@@ -201,26 +191,42 @@ document.addEventListener('DOMContentLoaded', function() {
         data: {
             labels: revenueData.map(d => d.label),
             datasets: [{
-                label: 'Pemasukan Lunas (Rp)',
+                label: 'Pendapatan',
                 data: revenueData.map(d => d.total),
-                borderColor: '#F97316',
-                backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                borderColor: '#2563EB',
+                backgroundColor: (context) => {
+                    const chart = context.chart;
+                    const {ctx, chartArea} = chart;
+                    if (!chartArea) return null;
+                    const gradient = ctx.createLinearGradient(0, chartArea.bottom, 0, chartArea.top);
+                    gradient.addColorStop(0, 'rgba(37, 99, 235, 0)');
+                    gradient.addColorStop(1, 'rgba(37, 99, 235, 0.1)');
+                    return gradient;
+                },
                 borderWidth: 3,
                 tension: 0.4,
                 fill: true,
-                pointBackgroundColor: '#F97316',
-                pointRadius: 4
+                pointBackgroundColor: '#2563EB',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2,
+                pointRadius: 4,
+                pointHoverRadius: 6
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: {
-                legend: { display: false }
-            },
+            plugins: { legend: { display: false } },
             scales: {
-                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-                x: { grid: { display: false } }
+                y: { 
+                    beginAtZero: true, 
+                    grid: { color: 'rgba(0,0,0,0.03)', drawBorder: false },
+                    ticks: { font: { size: 11 }, color: '#9CA3AF' }
+                },
+                x: { 
+                    grid: { display: false },
+                    ticks: { font: { size: 11 }, color: '#9CA3AF' }
+                }
             }
         }
     });
@@ -235,70 +241,18 @@ document.addEventListener('DOMContentLoaded', function() {
             labels: Object.keys(statusData),
             datasets: [{
                 data: Object.values(statusData),
-                backgroundColor: ['#FBBF24', '#60A5FA', '#34D399', '#F87171'],
-                hoverOffset: 4,
-                borderWidth: 0
+                backgroundColor: ['#FBBF24', '#3B82F6', '#10B981', '#EF4444'],
+                hoverOffset: 10,
+                borderWidth: 4,
+                borderColor: '#fff'
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            cutout: '70%',
+            cutout: '75%',
             plugins: {
-                legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15, font: { size: 11 } } }
-            }
-        }
-    });
-
-    // 3. Driver Performance Chart
-    const driverCtx = document.getElementById('driverChart').getContext('2d');
-    const driverData = @json($topDrivers);
-
-    new Chart(driverCtx, {
-        type: 'bar',
-        data: {
-            labels: driverData.map(d => d.nama),
-            datasets: [{
-                label: 'Pesanan Selesai',
-                data: driverData.map(d => d.total),
-                backgroundColor: '#2563EB',
-                borderRadius: 6
-            }]
-        },
-        options: {
-            indexAxis: 'y',
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                x: { beginAtZero: true, grid: { display: false } },
-                y: { grid: { display: false } }
-            }
-        }
-    });
-
-    // 4. Top Customer Chart
-    const customerCtx = document.getElementById('customerChart').getContext('2d');
-    const customerData = @json($topCustomers);
-
-    new Chart(customerCtx, {
-        type: 'bar',
-        data: {
-            labels: customerData.map(d => d.nama_pabrik),
-            datasets: [{
-                label: 'Total Pesanan',
-                data: customerData.map(d => d.total),
-                backgroundColor: '#9333EA',
-                borderRadius: 6
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: {
-                y: { beginAtZero: true, grid: { color: 'rgba(0,0,0,0.05)' } },
-                x: { grid: { display: false } }
+                legend: { position: 'bottom', labels: { boxWidth: 8, usePointStyle: true, padding: 20, font: { size: 11 } } }
             }
         }
     });
@@ -306,18 +260,33 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
-.stat-icon {
-    width: 50px; height: 50px; flex-shrink: 0;
-    border-radius: 14px;
+/* New Simpler Styles */
+.bg-primary-soft { background-color: rgba(37, 99, 235, 0.1); }
+.bg-success-soft { background-color: rgba(16, 185, 129, 0.1); }
+.bg-purple-soft { background-color: rgba(139, 92, 246, 0.1); }
+.text-purple { color: #8B5CF6; }
+
+.stat-icon-new {
+    width: 48px; height: 48px;
+    border-radius: 12px;
     display: flex; align-items: center; justify-content: center;
-    color: white; font-size: 22px;
+    font-size: 20px;
 }
-.stat-label {
-    font-size: 11.5px; font-weight: 600; text-transform: uppercase;
-    letter-spacing: .05em; color: #6B7280; margin-bottom: 2px;
+
+.rank-number {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700;
 }
-.stat-value {
-    font-size: 28px; font-weight: 700; color: #111827; margin: 0;
+
+.list-group-item:not(:last-child) {
+    border-bottom: 1px solid rgba(0,0,0,0.03) !important;
 }
+
+.card { transition: transform 0.2s ease; }
+.card:hover { transform: translateY(-3px); }
+
+h2 { letter-spacing: -0.5px; }
 </style>
 @endsection
