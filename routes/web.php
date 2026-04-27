@@ -39,6 +39,9 @@ Route::middleware([AdminMiddleware::class])
 
         Route::get('/laporan-keuangan', [LaporanController::class, 'keuangan'])
             ->name('admin.laporan.keuangan');
+            
+        Route::get('/laporan-keuangan/export-pdf', [LaporanController::class, 'exportPdf'])
+            ->name('admin.laporan.exportPdf');
 
         Route::resource('/sopir', SopirController::class);
         Route::resource('/kendaraan', KendaraanController::class);

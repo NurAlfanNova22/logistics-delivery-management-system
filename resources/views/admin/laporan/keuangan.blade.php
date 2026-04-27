@@ -49,6 +49,10 @@
             @if(request('start_date') || request('end_date'))
                 <a href="{{ route('admin.laporan.keuangan') }}" class="btn btn-sm btn-outline-secondary">Reset</a>
             @endif
+            <div class="vr mx-1 d-none d-md-block text-muted"></div>
+            <a href="{{ route('admin.laporan.exportPdf', request()->only(['start_date', 'end_date'])) }}" class="btn btn-sm btn-danger px-3" target="_blank">
+                <i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF
+            </a>
         </form>
     </div>
     <div class="card-body p-0">
