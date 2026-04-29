@@ -65,10 +65,10 @@
                                 <a href="/admin/kendaraan/{{ $k->id }}/edit" class="btn btn-sm btn-outline-secondary" title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <form action="/admin/kendaraan/{{ $k->id }}" method="POST" class="d-inline" onsubmit="return confirm('Yakin hapus kendaraan ini?')">
+                                <form action="/admin/kendaraan/{{ $k->id }}" method="POST" class="d-inline delete-confirm-form" data-confirm-message="Seluruh data terkait kendaraan ini akan ikut terhapus.">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="btn btn-sm btn-outline-danger" title="Hapus">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus">
                                         <i class="bi bi-trash"></i>
                                     </button>
                                 </form>

@@ -62,13 +62,13 @@
 
             <form action="/admin/sopir/{{ $s->id }}"
                   method="POST"
-                  class="d-inline"
-                  onsubmit="return confirm('Yakin hapus sopir ini?')">
+                  class="d-inline delete-confirm-form"
+                  data-confirm-message="Semua data sopir ini akan terhapus.">
 
                 @csrf
                 @method('DELETE')
 
-                <button class="btn btn-danger btn-sm">
+                <button type="submit" class="btn btn-danger btn-sm">
                     Hapus
                 </button>
 

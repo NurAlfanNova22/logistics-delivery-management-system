@@ -48,10 +48,10 @@
                                 <a href="{{ route('admin.customer.edit', $item->id) }}" class="btn btn-sm btn-outline-warning" title="Edit Profil">
                                     <i class="bi bi-pencil-fill"></i>
                                 </a>
-                                <form action="{{ route('admin.customer.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kustomer ini?')">
+                                <form action="{{ route('admin.customer.destroy', $item->id) }}" method="POST" class="d-inline delete-confirm-form" data-confirm-message="Seluruh data dan histori pesanan kustomer ini akan ikut terhapus.">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="btn btn-sm btn-outline-danger">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus Kustomer">
                                         <i class="bi bi-trash-fill"></i>
                                     </button>
                                 </form>

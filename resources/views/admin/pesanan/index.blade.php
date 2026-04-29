@@ -131,10 +131,10 @@
                                     </a>
                                 @endif
 
-                                <form action="{{ route('pesanan.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan ini?')">
+                                <form action="{{ route('pesanan.destroy', $item->id) }}" method="POST" class="d-inline delete-confirm-form" data-confirm-message="Pesanan ini akan dihapus secara permanen.">
                                     @csrf
                                     @method('DELETE')
-                                    <button class="btn btn-sm btn-outline-danger" title="Hapus Pesanan">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Hapus Pesanan">
                                         <i class="bi bi-trash-fill"></i>
                                     </button>
                                 </form>
