@@ -48,6 +48,8 @@ Route::middleware([AdminMiddleware::class])
 
         Route::get('/customer', [CustomerController::class, 'index'])->name('admin.customer.index');
         Route::get('/customer/{id}', [CustomerController::class, 'show'])->name('admin.customer.show');
+        Route::get('/customer/{id}/edit', [CustomerController::class, 'edit'])->name('admin.customer.edit');
+        Route::put('/customer/{id}', [CustomerController::class, 'update'])->name('admin.customer.update');
         Route::delete('/customer/{id}', [CustomerController::class, 'destroy'])->name('admin.customer.destroy');
 
         /*
