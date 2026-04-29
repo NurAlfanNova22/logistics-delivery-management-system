@@ -130,6 +130,14 @@
                                         <i class="bi bi-pencil-fill"></i>
                                     </a>
                                 @endif
+
+                                <form action="{{ route('pesanan.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pesanan ini?')">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-sm btn-outline-danger" title="Hapus Pesanan">
+                                        <i class="bi bi-trash-fill"></i>
+                                    </button>
+                                </form>
                             </div>
                         </td>
                     </tr>

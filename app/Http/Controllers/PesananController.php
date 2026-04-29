@@ -126,4 +126,17 @@ class PesananController extends Controller
         return redirect()->route('pesanan.index')
             ->with('success', 'Status berhasil diperbarui');
     }
+
+    public function destroy($id)
+    {
+        $pesanan = Pesanan::findOrFail($id);
+        
+        // Optional: you can also delete related notifications in Firebase here if needed,
+        // but for now we just delete the order record from the database.
+        
+        $pesanan->delete();
+
+        return redirect()->route('pesanan.index')
+            ->with('success', 'Pesanan berhasil dihapus');
+    }
 }
