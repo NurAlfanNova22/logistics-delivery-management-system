@@ -77,4 +77,67 @@ class LaporanController extends Controller
 
         return $pdf->download('laporan-keuangan-' . Carbon::now()->format('Y-m-d') . '.pdf');
     }
+
+    public function kinerjaSopir(Request $request)
+    {
+        $startDate = null;
+        $endDate = null;
+        $periode = 'Semua Waktu';
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $startDate = Carbon::parse($request->start_date)->startOfDay();
+            $endDate = Carbon::parse($request->end_date)->endOfDay();
+            $periode = $startDate->format('d M Y') . ' - ' . $endDate->format('d M Y');
+        }
+
+        $sopirs = \App\Models\Sopir::with(['kendaraan'])
+            ->withCount(['pesanans as total_selesai' => function ($query) use ($startDate, $endDate) {
+                $query->where('status', 'SELESAI');
+                if ($startDate && $endDate) {
+                    $query->whereBetween('tanggal_selesai', [$startDate, $endDate]);
+                }
+            }])
+            ->withSum(['pesanans as total_pendapatan' => function ($query) use ($startDate, $endDate) {
+                $query->where('status', 'SELESAI');
+                if ($startDate && $endDate) {
+                    $query->whereBetween('tanggal_selesai', [$startDate, $endDate]);
+                }
+            }], 'total_biaya')
+            ->orderBy('total_selesai', 'desc')
+            ->get();
+
+        return view('admin.laporan.kinerja_sopir', compact('sopirs', 'periode'));
+    }
+
+    public function exportKinerjaSopir(Request $request)
+    {
+        $startDate = null;
+        $endDate = null;
+        $periode = 'Semua Waktu';
+
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $startDate = Carbon::parse($request->start_date)->startOfDay();
+            $endDate = Carbon::parse($request->end_date)->endOfDay();
+            $periode = $startDate->format('d M Y') . ' - ' . $endDate->format('d M Y');
+        }
+
+        $sopirs = \App\Models\Sopir::with(['kendaraan'])
+            ->withCount(['pesanans as total_selesai' => function ($query) use ($startDate, $endDate) {
+                $query->where('status', 'SELESAI');
+                if ($startDate && $endDate) {
+                    $query->whereBetween('tanggal_selesai', [$startDate, $endDate]);
+                }
+            }])
+            ->withSum(['pesanans as total_pendapatan' => function ($query) use ($startDate, $endDate) {
+                $query->where('status', 'SELESAI');
+                if ($startDate && $endDate) {
+                    $query->whereBetween('tanggal_selesai', [$startDate, $endDate]);
+                }
+            }], 'total_biaya')
+            ->orderBy('total_selesai', 'desc')
+            ->get();
+
+        $pdf = Pdf::loadView('admin.laporan.pdf_kinerja_sopir', compact('sopirs', 'periode'));
+        return $pdf->download('laporan-kinerja-sopir-' . Carbon::now()->format('Y-m-d') . '.pdf');
+    }
 }
