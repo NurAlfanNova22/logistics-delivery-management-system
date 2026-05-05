@@ -8,6 +8,10 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\OtpMail;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -185,5 +189,68 @@ class AuthController extends Controller
             'user' => $user,
             'sopir' => $user->sopir
         ]);
+    }
+
+    public function forgotPassword(Request $request)
+    {
+        $request->validate(['email' => 'required|email']);
+
+        $user = User::where('email', $request->email)->first();
+        if (!$user) {
+            return response()->json(['message' => 'Email tidak terdaftar'], 404);
+        }
+
+        // Generate 6 digit OTP
+        $otp = rand(100000, 999999);
+
+        // Save to DB
+        DB::table('password_reset_otps')->updateOrInsert(
+            ['email' => $request->email],
+            [
+                'otp' => Hash::make($otp),
+                'created_at' => Carbon::now()
+            ]
+        );
+
+        // Send Email
+        Mail::to($request->email)->send(new OtpMail($otp));
+
+        return response()->json(['message' => 'Kode OTP telah dikirim ke email Anda']);
+    }
+
+    public function resetPassword(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp' => 'required|digits:6',
+            'password' => 'required|min:8|confirmed'
+        ]);
+
+        $otpRecord = DB::table('password_reset_otps')->where('email', $request->email)->first();
+
+        if (!$otpRecord) {
+            return response()->json(['message' => 'Permintaan tidak valid'], 400);
+        }
+
+        // Check if OTP expired (15 minutes)
+        if (Carbon::parse($otpRecord->created_at)->addMinutes(15)->isPast()) {
+            DB::table('password_reset_otps')->where('email', $request->email)->delete();
+            return response()->json(['message' => 'Kode OTP telah kadaluarsa'], 400);
+        }
+
+        // Verify OTP
+        if (!Hash::check($request->otp, $otpRecord->otp)) {
+            return response()->json(['message' => 'Kode OTP tidak valid'], 400);
+        }
+
+        // Update Password
+        $user = User::where('email', $request->email)->first();
+        $user->password = Hash::make($request->password);
+        $user->save();
+
+        // Delete OTP record
+        DB::table('password_reset_otps')->where('email', $request->email)->delete();
+
+        return response()->json(['message' => 'Password berhasil direset. Silakan login kembali.']);
     }
 }

@@ -15,6 +15,8 @@ use App\Http\Controllers\Api\AuthController;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/driver/login', [AuthController::class, 'loginDriver']);
+Route::post('/forgot-password', [AuthController::class, 'forgotPassword']);
+Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 Route::post('/payment/callback', [PesananApiController::class, 'paymentCallback']);
 Route::get('/tracking/{resi}', [PesananApiController::class, 'trackingResi']);
 
