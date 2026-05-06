@@ -124,6 +124,13 @@
                                     </a>
                                 @endif
 
+                                @if($item->sopir_id && strtolower($item->status) !== 'selesai' && strtolower($item->status) !== 'dibatalkan')
+                                    <a href="{{ route('pesanan.reassignForm', $item->id) }}"
+                                        class="btn btn-sm btn-warning" title="Ubah Sopir (Reassign)">
+                                        <i class="bi bi-arrow-left-right text-dark"></i>
+                                    </a>
+                                @endif
+
                                 @if(strtolower($item->status) !== 'selesai')
                                     <a href="{{ route('pesanan.updateStatusForm', $item->id) }}"
                                         class="btn btn-sm btn-outline-secondary" title="Edit Status">

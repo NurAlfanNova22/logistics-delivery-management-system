@@ -63,6 +63,53 @@ class PesananController extends Controller
             ->with('success','Pesanan berhasil di-assign');
     }
 
+    public function reassignForm($id)
+    {
+        $pesanan = Pesanan::with('sopir')->findOrFail($id);
+        $sopir = Sopir::all();
+
+        return view('admin.pesanan.reassign', compact('pesanan','sopir'));
+    }
+
+    public function reassignStore(Request $request, $id)
+    {
+        $request->validate([
+            'sopir_id' => [
+                'required',
+                function ($attribute, $value, $fail) use ($id) {
+                    $pesanan = Pesanan::find($id);
+                    if ($pesanan && $pesanan->sopir_id == $value) {
+                        $fail('Sopir baru tidak boleh sama dengan sopir saat ini.');
+                    }
+                    $sopir = \App\Models\Sopir::find($value);
+                    if ($sopir && !$sopir->is_online) {
+                        $fail('Sopir yang dipilih sedang Offline. Menunggu sopir aktif.');
+                    }
+                },
+            ]
+        ]);
+
+        $pesanan = Pesanan::findOrFail($id);
+        
+        $pesanan->sopir_id = $request->sopir_id;
+        $pesanan->save();
+
+        try {
+            $db = app(FirebaseService::class)->database();
+            $db->getReference('notifications_driver/' . $pesanan->sopir_id)->push([
+                'title' => 'Pesanan Dialihkan ke Anda 🚛',
+                'body' => 'Pengiriman (Resi: '.$pesanan->resi.') tujuan ke ' . $pesanan->alamat_tujuan . ' telah ditugaskan kepada Anda.',
+                'resi' => $pesanan->resi,
+                'timestamp' => now()->timestamp * 1000,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Firebase Notification Error: ' . $e->getMessage());
+        }
+
+        return redirect()->route('pesanan.index')
+            ->with('success', 'Sopir berhasil diubah');
+    }
+
     public function index(Request $request)
     {
         $query = Pesanan::with('sopir.kendaraan');

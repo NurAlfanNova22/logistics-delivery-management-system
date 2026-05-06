@@ -73,6 +73,15 @@ Route::middleware([AdminMiddleware::class])
             [PesananController::class, 'assignStore']
         )->name('pesanan.assignStore');
 
+        // Reassign Driver
+        Route::get('/pesanan/{id}/reassign',
+            [PesananController::class, 'reassignForm']
+        )->name('pesanan.reassignForm');
+
+        Route::post('/pesanan/{id}/reassign',
+            [PesananController::class, 'reassignStore']
+        )->name('pesanan.reassignStore');
+
         // Update Status
         Route::get('/pesanan/{id}/update-status',
             [PesananController::class, 'updateStatusForm']
