@@ -16,6 +16,7 @@ class PesananApiController extends Controller
 
     public function store(Request $request)
     {
+        \Log::info("🚀 [STORE DEBUG] Menerima request buat pesanan dari User: " . auth()->id());
         $request->validate([
             'nama_pabrik' => 'required',
             'alamat_asal' => 'required',
