@@ -32,7 +32,13 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/pesanan/{id}/batal', [PesananApiController::class, 'batalkanPesanan']);
     
     Route::put('/user/profile', [AuthController::class, 'updateProfile']);
+    Route::post('/user/update-fcm', [AuthController::class, 'updateFcmToken']);
     Route::post('/logout', [AuthController::class, 'logout']);
+
+    // Notifications
+    Route::get('/notifications', [\App\Http\Controllers\Api\NotificationApiController::class, 'index']);
+    Route::post('/notifications/{id}/read', [\App\Http\Controllers\Api\NotificationApiController::class, 'markAsRead']);
+    Route::post('/notifications/read-all', [\App\Http\Controllers\Api\NotificationApiController::class, 'markAllAsRead']);
 });
 
 // Driver Routes

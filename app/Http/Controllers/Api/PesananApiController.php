@@ -53,6 +53,14 @@ class PesananApiController extends Controller
             'status_pembayaran' => 'BELUM DIBAYAR'
         ]);
 
+        $this->createNotification(
+            $pesanan->user_id,
+            'Pesanan Berhasil Dibuat',
+            "Pesanan Anda dengan resi {$pesanan->resi} telah berhasil dibuat dan menunggu konfirmasi admin.",
+            'order_created',
+            ['order_id' => $pesanan->id, 'resi' => $pesanan->resi]
+        );
+
         return response()->json($pesanan);
     }
 
@@ -80,8 +88,24 @@ class PesananApiController extends Controller
             if ($statusSekarang == 'MENUNGGU PICKUP' || $statusSekarang == '') {
                 $pesanan->status_pengiriman = 'DALAM PERJALANAN';
                 $pesanan->tanggal_dikirim = \Illuminate\Support\Carbon::now();
+                
+                $this->createNotification(
+                    $pesanan->user_id,
+                    'Pesanan Dalam Perjalanan',
+                    "Sopir telah memulai pengiriman untuk pesanan {$pesanan->resi}. Silakan pantau di menu tracking.",
+                    'order_shipped',
+                    ['order_id' => $pesanan->id, 'resi' => $pesanan->resi]
+                );
             } elseif ($statusSekarang == 'DALAM PERJALANAN') {
                 $pesanan->status_pengiriman = 'PESANAN TELAH DIKIRIM';
+                
+                $this->createNotification(
+                    $pesanan->user_id,
+                    'Pesanan Telah Sampai',
+                    "Pesanan {$pesanan->resi} telah sampai di lokasi tujuan. Silakan lakukan pembayaran jika belum lunas.",
+                    'order_arrived',
+                    ['order_id' => $pesanan->id, 'resi' => $pesanan->resi]
+                );
                 
                 // Generate Midtrans Token only if not already generated & biaya > 0
                 if ($pesanan->total_biaya > 0 && !$pesanan->snap_token) {
@@ -339,6 +363,14 @@ class PesananApiController extends Controller
             if ($transactionStatus == 'capture' || $transactionStatus == 'settlement') {
                 $pesanan->status_pembayaran = 'SUDAH DIBAYAR';
                 $pesanan->save();
+
+                $this->createNotification(
+                    $pesanan->user_id,
+                    'Pembayaran Berhasil',
+                    "Pembayaran untuk pesanan {$pesanan->resi} telah kami terima. Terima kasih!",
+                    'payment_success',
+                    ['order_id' => $pesanan->id, 'resi' => $pesanan->resi]
+                );
                 \Log::info("Payment SUCCESS for order: $orderId");
             } else if ($transactionStatus == 'cancel' || $transactionStatus == 'deny' || $transactionStatus == 'expire') {
                 $pesanan->status_pembayaran = 'GAGAL / EXPIRED';
@@ -351,5 +383,82 @@ class PesananApiController extends Controller
             \Log::error('Callback Error: ' . $e->getMessage());
             return response()->json(['message' => $e->getMessage()], 500);
         }
+    }
+    private function createNotification($userId, $title, $body, $type = null, $data = null)
+    {
+        try {
+            $user = \App\Models\User::find($userId);
+            
+            // 1. Simpan ke database MySQL (Riwayat)
+            \App\Models\Notification::create([
+                'user_id' => $userId,
+                'title' => $title,
+                'body' => $body,
+                'type' => $type,
+                'data' => $data
+            ]);
+
+            // 2. Kirim ke Firebase Realtime Database (Untuk Notifikasi Instan)
+            try {
+                $targetId = (int) $userId;
+                \Log::info("🔔 [FIREBASE DEBUG] Mencoba kirim ke: notifications_customer/" . $targetId);
+                
+                $db = app(\App\Services\FirebaseService::class)->database();
+                
+                $pushData = [
+                    'title' => (string) $title,
+                    'body' => (string) $body,
+                    'type' => (string) $type,
+                    'data' => $data,
+                    'timestamp' => (int) (now()->timestamp * 1000),
+                ];
+                
+                $db->getReference('notifications_customer/' . $targetId)->push($pushData);
+                \Log::info("✅ [FIREBASE DEBUG] Berhasil push data!");
+            } catch (\Exception $fe) {
+                \Log::error('❌ [FIREBASE DEBUG] Error: ' . $fe->getMessage());
+                \Log::error($fe->getTraceAsString());
+            }
+
+            // 3. Kirim Push Notification via FCM (Backup jika aplikasi ditutup)
+            if ($user && $user->fcm_token) {
+                $this->sendFcmPush($user->fcm_token, $title, $body, $data);
+            }
+        } catch (\Throwable $e) {
+            \Log::error('Create Notification Error: ' . $e->getMessage());
+        }
+    }
+
+    private function sendFcmPush($token, $title, $body, $data = null)
+    {
+        $serverKey = env('FCM_SERVER_KEY');
+        if (!$serverKey) return;
+
+        $url = 'https://fcm.googleapis.com/fcm/send';
+        $fields = [
+            'to' => $token,
+            'notification' => [
+                'title' => $title,
+                'body' => $body,
+                'sound' => 'default'
+            ],
+            'data' => $data ?? []
+        ];
+
+        $headers = [
+            'Authorization: key=' . $serverKey,
+            'Content-Type: application/json'
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($fields));
+        $result = curl_exec($ch);
+        curl_close($ch);
+        
+        return $result;
     }
 }

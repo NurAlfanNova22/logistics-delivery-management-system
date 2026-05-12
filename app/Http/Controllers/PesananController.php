@@ -48,11 +48,21 @@ class PesananController extends Controller
         $pesanan->save();
 
         try {
-            $db = app(FirebaseService::class)->database();
+            $db = app(\App\Services\FirebaseService::class)->database();
+            // Notifikasi ke Driver
             $db->getReference('notifications_driver/' . $pesanan->sopir_id)->push([
                 'title' => 'Pesanan Baru! 🚛',
                 'body' => 'Pengiriman baru (Resi: '.$pesanan->resi.') tujuan ke ' . $pesanan->alamat_tujuan . ' sudah ditugaskan kepada Anda.',
                 'resi' => $pesanan->resi,
+                'timestamp' => now()->timestamp * 1000,
+            ]);
+
+            // Notifikasi ke Customer
+            $db->getReference('notifications_customer/' . $pesanan->user_id)->push([
+                'title' => 'Supir Telah Ditugaskan! 🚛',
+                'body' => 'Pesanan Anda (Resi: '.$pesanan->resi.') sedang disiapkan. Supir: ' . $pesanan->sopir->nama,
+                'type' => 'driver_assigned',
+                'data' => ['order_id' => $pesanan->id, 'resi' => $pesanan->resi],
                 'timestamp' => now()->timestamp * 1000,
             ]);
         } catch (\Exception $e) {
@@ -96,10 +106,20 @@ class PesananController extends Controller
 
         try {
             $db = app(FirebaseService::class)->database();
+            // Notifikasi ke Driver Baru
             $db->getReference('notifications_driver/' . $pesanan->sopir_id)->push([
                 'title' => 'Pesanan Dialihkan ke Anda 🚛',
                 'body' => 'Pengiriman (Resi: '.$pesanan->resi.') tujuan ke ' . $pesanan->alamat_tujuan . ' telah ditugaskan kepada Anda.',
                 'resi' => $pesanan->resi,
+                'timestamp' => now()->timestamp * 1000,
+            ]);
+
+            // Notifikasi ke Customer
+            $db->getReference('notifications_customer/' . $pesanan->user_id)->push([
+                'title' => 'Perubahan Supir 🚛',
+                'body' => 'Supir untuk pesanan Anda (Resi: '.$pesanan->resi.') telah diperbarui menjadi: ' . $pesanan->sopir->nama,
+                'type' => 'driver_changed',
+                'data' => ['order_id' => $pesanan->id, 'resi' => $pesanan->resi],
                 'timestamp' => now()->timestamp * 1000,
             ]);
         } catch (\Exception $e) {
@@ -169,6 +189,20 @@ class PesananController extends Controller
         }
 
         $pesanan->save();
+
+        // Kirim Notifikasi ke Customer via Firebase Realtime
+        try {
+            $db = app(\App\Services\FirebaseService::class)->database();
+            $db->getReference('notifications_customer/' . $pesanan->user_id)->push([
+                'title' => 'Update Status Pesanan 📦',
+                'body' => 'Pesanan Anda (Resi: '.$pesanan->resi.') kini berstatus: ' . $pesanan->status,
+                'type' => 'status_update',
+                'data' => ['order_id' => $pesanan->id, 'resi' => $pesanan->resi],
+                'timestamp' => now()->timestamp * 1000,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Firebase Notification Error: ' . $e->getMessage());
+        }
 
         return redirect()->route('pesanan.index')
             ->with('success', 'Status berhasil diperbarui');

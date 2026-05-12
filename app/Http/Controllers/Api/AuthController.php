@@ -253,4 +253,10 @@ class AuthController extends Controller
 
         return response()->json(['message' => 'Password berhasil direset. Silakan login kembali.']);
     }
+    public function updateFcmToken(Request $request)
+    {
+        $request->validate(['fcm_token' => 'required']);
+        $request->user()->update(['fcm_token' => $request->fcm_token]);
+        return response()->json(['message' => 'FCM Token updated']);
+    }
 }
