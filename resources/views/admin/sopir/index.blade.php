@@ -1,6 +1,6 @@
 @extends('layouts.admin')
-
-@section('content')
+@section('page-title', 'Data Sopir')
+<!-- @section('content') -->
 
 <h4>Data Sopir</h4>
 
