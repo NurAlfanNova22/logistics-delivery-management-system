@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Pesanan;
 use Carbon\Carbon;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class LaporanController extends Controller
 {
@@ -69,7 +70,7 @@ class LaporanController extends Controller
         $totalLunas = $pemasukanLunas->sum('total_biaya');
         $totalPending = $tagihanPending->sum('total_biaya');
 
-        $pdf = app('dompdf.wrapper')->loadView('admin.laporan.pdf_keuangan', compact('transaksi', 'totalLunas', 'totalPending', 'periode'));
+        $pdf = Pdf::loadView('admin.laporan.pdf_keuangan', compact('transaksi', 'totalLunas', 'totalPending', 'periode'));
         
         // Kustomisasi ukuran kertas atau orientasi jika diperlukan
         $pdf->setPaper('A4', 'landscape');
@@ -136,7 +137,7 @@ class LaporanController extends Controller
             ->orderBy('total_selesai', 'desc')
             ->get();
 
-        $pdf = app('dompdf.wrapper')->loadView('admin.laporan.pdf_kinerja_sopir', compact('sopirs', 'periode'));
+        $pdf = Pdf::loadView('admin.laporan.pdf_kinerja_sopir', compact('sopirs', 'periode'));
         return $pdf->download('laporan-kinerja-sopir-' . Carbon::now()->format('Y-m-d') . '.pdf');
     }
 }
