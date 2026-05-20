@@ -144,7 +144,7 @@
                         @endif
                     </td>
                     <td class="text-center">{{ $t->status }}</td>
-                    <td class="text-right">{{ number_format($t->total_biaya, 0, ',', '.') }}</td>
+                    <td class="text-right">{{ number_format($t->total_biaya ?? 0, 0, ',', '.') }}</td>
                 </tr>
             @empty
                 <tr>

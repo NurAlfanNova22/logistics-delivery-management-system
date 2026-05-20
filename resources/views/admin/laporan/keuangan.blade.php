@@ -74,7 +74,7 @@
                         <td class="ps-4 fw-bold text-primary">{{ $item->resi }}</td>
                         <td>{{ $item->created_at->format('d M Y, H:i') }}</td>
                         <td class="fw-medium">{{ $item->nama_pabrik }}</td>
-                        <td class="fw-bold">Rp {{ number_format($item->total_biaya, 0, ',', '.') }}</td>
+                        <td class="fw-bold">Rp {{ number_format($item->total_biaya ?? 0, 0, ',', '.') }}</td>
                         <td>
                             @if(strtoupper($item->status_pembayaran) == 'SUDAH DIBAYAR')
                                 <span class="badge bg-success-subtle text-success border border-success-subtle px-2">Lunas ✅</span>

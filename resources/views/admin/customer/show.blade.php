@@ -63,7 +63,7 @@
                                             {{ $order->status }}
                                         </span>
                                     </td>
-                                    <td class="pe-4 text-end fw-bold">Rp {{ number_format($order->total_biaya, 0, ',', '.') }}</td>
+                                    <td class="pe-4 text-end fw-bold">Rp {{ number_format($order->total_biaya ?? 0, 0, ',', '.') }}</td>
                                 </tr>
                                 @empty
                                 <tr>
