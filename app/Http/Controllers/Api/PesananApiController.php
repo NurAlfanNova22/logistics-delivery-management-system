@@ -74,6 +74,7 @@ class PesananApiController extends Controller
 
         $orders = Pesanan::where('sopir_id', $sopir_id)
             ->whereNotNull('sopir_id') // Wajib sudah ter-assign
+            ->where('status', '!=', 'DIBATALKAN')
             ->orderBy('created_at','desc')
             ->get();
 
@@ -84,6 +85,14 @@ class PesananApiController extends Controller
     {
         try {
             $pesanan = Pesanan::findOrFail($id);
+            
+            if ($pesanan->status == 'DIBATALKAN') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal update status: Pesanan telah dibatalkan oleh customer.'
+                ], 400);
+            }
+
             $statusSekarang = strtoupper($pesanan->status_pengiriman ?? '');
 
             if ($statusSekarang == 'MENUNGGU PICKUP' || $statusSekarang == '') {
@@ -203,6 +212,30 @@ class PesananApiController extends Controller
 
         $pesanan->status = 'DIBATALKAN';
         $pesanan->save();
+
+        // 1. Kirim notifikasi ke Customer
+        $this->createNotification(
+            $pesanan->user_id,
+            'Pesanan Dibatalkan ❌',
+            "Pesanan Anda dengan resi {$pesanan->resi} telah berhasil dibatalkan.",
+            'order_cancelled',
+            ['order_id' => $pesanan->id, 'resi' => $pesanan->resi]
+        );
+
+        // 2. Kirim notifikasi ke Driver (jika sudah ter-assign)
+        if ($pesanan->sopir_id) {
+            try {
+                $db = app(\App\Services\FirebaseService::class)->database();
+                $db->getReference('notifications_driver/' . $pesanan->sopir_id)->push([
+                    'title' => 'Pesanan Dibatalkan ❌',
+                    'body' => "Pesanan dengan Resi: {$pesanan->resi} telah dibatalkan oleh customer.",
+                    'resi' => $pesanan->resi,
+                    'timestamp' => now()->timestamp * 1000,
+                ]);
+            } catch (\Exception $e) {
+                \Log::error('Firebase Notification Error for Driver on Cancel: ' . $e->getMessage());
+            }
+        }
 
         return response()->json([
             'status' => true,

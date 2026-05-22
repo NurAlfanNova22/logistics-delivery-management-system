@@ -39,7 +39,7 @@ class Sopir extends Model
 
         // Check if there is an active order
         $sedangBertugas = \App\Models\Pesanan::where('sopir_id', $this->id)
-            ->where('status', '!=', 'SELESAI')
+            ->whereNotIn('status', ['SELESAI', 'DIBATALKAN'])
             ->exists();
 
         return $sedangBertugas ? 'Sedang Bertugas' : 'Tersedia';
