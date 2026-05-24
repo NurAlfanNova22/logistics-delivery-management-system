@@ -396,6 +396,8 @@ class PesananApiController extends Controller
 
             if ($transactionStatus == 'capture' || $transactionStatus == 'settlement') {
                 $pesanan->status_pembayaran = 'SUDAH DIBAYAR';
+                $pesanan->status = 'SELESAI';
+                $pesanan->tanggal_selesai = \Illuminate\Support\Carbon::now();
                 $pesanan->save();
 
                 $this->createNotification(
