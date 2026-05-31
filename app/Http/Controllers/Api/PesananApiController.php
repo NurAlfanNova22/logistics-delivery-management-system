@@ -62,6 +62,20 @@ class PesananApiController extends Controller
             ['order_id' => $pesanan->id, 'resi' => $pesanan->resi]
         );
 
+        // Push notifikasi pesanan baru untuk admin ke Firebase Realtime Database
+        try {
+            $db = app(\App\Services\FirebaseService::class)->database();
+            $db->getReference('notifications_admin')->push([
+                'title' => 'Pesanan Baru Masuk! 📦',
+                'body' => "Pesanan dengan resi {$pesanan->resi} telah dibuat oleh " . (auth()->user()->name ?? 'Customer') . ".",
+                'resi' => $pesanan->resi,
+                'nama_pabrik' => $pesanan->nama_pabrik,
+                'timestamp' => (int) (now()->timestamp * 1000)
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Error pushing notification to Admin Firebase: ' . $e->getMessage());
+        }
+
         return response()->json($pesanan);
     }
 

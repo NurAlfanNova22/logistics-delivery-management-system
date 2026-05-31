@@ -293,6 +293,51 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+<!-- Firebase SDK (Compat version) -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<script>
+// Inisialisasi Firebase Realtime Database
+const firebaseConfig = {
+    databaseURL: "https://lacar-ekspedisi-default-rtdb.asia-southeast1.firebasedatabase.app"
+};
+firebase.initializeApp(firebaseConfig);
+const database = firebase.database();
+
+// Dengarkan notifikasi pesanan baru masuk
+const startTime = Date.now();
+database.ref('notifications_admin')
+    .orderByChild('timestamp')
+    .startAt(startTime)
+    .on('child_added', function(snapshot) {
+        const data = snapshot.val();
+        if (data) {
+            // Putar audio sound effect notifikasi
+            const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-84.wav');
+            audio.play().catch(function(e) { console.log('Audio blocked:', e); });
+
+            Swal.fire({
+                title: data.title || 'Pesanan Baru!',
+                text: data.body || 'Ada pesanan baru dari kustomer.',
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonColor: '#ea580c',
+                confirmButtonText: 'Lihat Pesanan',
+                cancelButtonText: 'Tutup',
+                reverseButtons: true,
+                customClass: {
+                    confirmButton: 'btn btn-primary ms-2 px-4',
+                    cancelButton: 'btn btn-secondary px-4'
+                },
+                buttonsStyling: false
+            }).then(function(result) {
+                if (result.isConfirmed) {
+                    window.location.href = '/admin/pesanan';
+                }
+            });
+        }
+    });
 </script>
 </body>
 </html>
