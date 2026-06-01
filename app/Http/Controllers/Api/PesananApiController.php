@@ -171,6 +171,11 @@ class PesananApiController extends Controller
                     'customer_details' => [
                         'first_name' => $pesanan->nama_pabrik,
                     ],
+                    'expiry' => [
+                        'start_time' => date("Y-m-d H:i:s O"),
+                        'unit' => 'day',
+                        'duration' => 3 // Aktif selama 3 hari
+                    ],
                     // Tambahkan Callback URL secara eksplisit
                     'callbacks' => [
                         'finish' => 'lancarekspedisi://payment_finish'
@@ -268,9 +273,14 @@ class PesananApiController extends Controller
             ], 404);
         }
 
-        // Auto-generate payment token if shipped but token is missing
-        if ($pesanan->status_pengiriman == 'PESANAN TELAH DIKIRIM' && $pesanan->total_biaya > 0 && !$pesanan->snap_token) {
-            $this->ensureMidtransToken($pesanan);
+        // Auto-generate or regenerate payment token if shipped and unpaid
+        if ($pesanan->status_pengiriman == 'PESANAN TELAH DIKIRIM' && $pesanan->total_biaya > 0) {
+            $isExpired = $pesanan->snap_token && $pesanan->updated_at->diffInHours(now()) >= 72;
+            if (!$pesanan->snap_token || $isExpired) {
+                $pesanan->snap_token = null;
+                $pesanan->payment_url = null;
+                $this->ensureMidtransToken($pesanan);
+            }
         }
 
         // Base progress steps
