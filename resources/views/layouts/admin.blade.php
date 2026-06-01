@@ -293,6 +293,8 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 });
+</script>
+
 <!-- Firebase SDK (Compat version) -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
