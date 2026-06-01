@@ -37,9 +37,10 @@ class Sopir extends Model
             return 'Offline';
         }
 
-        // Check if there is an active order
+        // Check if there is an active order that is still in progress (not delivered and not cancelled)
         $sedangBertugas = \App\Models\Pesanan::where('sopir_id', $this->id)
-            ->whereNotIn('status', ['SELESAI', 'DIBATALKAN'])
+            ->where('status', '!=', 'DIBATALKAN')
+            ->whereNotIn('status_pengiriman', ['PESANAN TELAH DIKIRIM'])
             ->exists();
 
         return $sedangBertugas ? 'Sedang Bertugas' : 'Tersedia';
