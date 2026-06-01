@@ -306,25 +306,37 @@ const firebaseConfig = {
 };
 firebase.initializeApp(firebaseConfig);
 const database = firebase.database();
+console.log("🔔 [Firebase Admin] Database terinisialisasi dengan URL:", firebaseConfig.databaseURL);
 
 // Dengarkan notifikasi pesanan baru masuk secara real-time
 let isFirstLoad = true;
 const notificationRef = database.ref('notifications_admin').limitToLast(1);
 
 // Matikan flag first load setelah pembacaan awal selesai
-notificationRef.once('value').then(function() {
-    isFirstLoad = false;
-});
+notificationRef.once('value')
+    .then(function(snapshot) {
+        isFirstLoad = false;
+        console.log("🔔 [Firebase Admin] Pembacaan awal data selesai. Menunggu pesanan baru masuk...");
+        console.log("🔔 [Firebase Admin] Nilai terakhir saat ini:", snapshot.val());
+    })
+    .catch(function(error) {
+        console.error("❌ [Firebase Admin] Gagal membaca data awal:", error);
+    });
 
 notificationRef.on('child_added', function(snapshot) {
+    console.log("🔔 [Firebase Admin] child_added terdeteksi. Key:", snapshot.key, "Val:", snapshot.val());
     if (isFirstLoad) {
+        console.log("🔔 [Firebase Admin] Mengabaikan data lama:", snapshot.key);
         return; // Abaikan data lama saat pertama kali halaman dimuat
     }
     const data = snapshot.val();
     if (data) {
+        console.log("🔔 [Firebase Admin] Memunculkan notifikasi pesanan baru!");
         // Putar audio sound effect notifikasi
         const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-84.wav');
-        audio.play().catch(function(e) { console.log('Audio blocked:', e); });
+        audio.play()
+            .then(() => console.log("🔊 [Firebase Admin] Suara notifikasi berhasil diputar"))
+            .catch(function(e) { console.warn('🔊 [Firebase Admin] Suara diblokir oleh browser:', e); });
 
         Swal.fire({
             title: data.title || 'Pesanan Baru!',
@@ -346,6 +358,8 @@ notificationRef.on('child_added', function(snapshot) {
             }
         });
     }
+}, function(error) {
+    console.error("❌ [Firebase Admin] Error pada listener child_added:", error);
 });
 </script>
 </body>
