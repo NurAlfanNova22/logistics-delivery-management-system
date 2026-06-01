@@ -35,6 +35,45 @@ class Pesanan extends Model
         'tanggal_dikirim' => 'datetime',
     ];
 
+    protected $appends = [
+        'alamat_asal_clean',
+        'alamat_tujuan_clean',
+        'alamat_asal_coordinate',
+        'alamat_tujuan_coordinate'
+    ];
+
+    public function getAlamatAsalCleanAttribute()
+    {
+        if (str_contains($this->alamat_asal, ' @')) {
+            return explode(' @', $this->alamat_asal)[0];
+        }
+        return $this->alamat_asal;
+    }
+
+    public function getAlamatTujuanCleanAttribute()
+    {
+        if (str_contains($this->alamat_tujuan, ' @')) {
+            return explode(' @', $this->alamat_tujuan)[0];
+        }
+        return $this->alamat_tujuan;
+    }
+
+    public function getAlamatAsalCoordinateAttribute()
+    {
+        if (str_contains($this->alamat_asal, ' @')) {
+            return explode(' @', $this->alamat_asal)[1];
+        }
+        return null;
+    }
+
+    public function getAlamatTujuanCoordinateAttribute()
+    {
+        if (str_contains($this->alamat_tujuan, ' @')) {
+            return explode(' @', $this->alamat_tujuan)[1];
+        }
+        return null;
+    }
+
     public function user()
     {
         return $this->belongsTo(User::class);
