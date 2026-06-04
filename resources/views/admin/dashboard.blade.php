@@ -38,10 +38,10 @@
                 <div class="card-body p-4">
                     <div class="d-flex align-items-center justify-content-between mb-3">
                         <div class="stat-icon-new bg-success-soft text-success">
-                            <i class="bi bi-currency-dollar"></i>
+                            <i class="bi bi-wallet2"></i>
                         </div>
                         <div class="text-end">
-                            <p class="text-muted small fw-medium mb-0">Pendapatan Lunas</p>
+                            <p class="text-muted small fw-medium mb-0">Pendapatan Lunas (Bulan Ini)</p>
                             <h2 class="fw-bold mb-0" style="font-size: 1.5rem">Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}</h2>
                         </div>
                     </div>
@@ -49,6 +49,10 @@
                         <div class="flex-fill">
                             <p class="text-muted small mb-0">Hari Ini</p>
                             <p class="fw-bold text-success mb-0">Rp {{ number_format($pendapatanHariIni, 0, ',', '.') }}</p>
+                        </div>
+                        <div class="flex-fill border-start ps-3">
+                            <p class="text-muted small mb-0">Bulan Ini ({{ Carbon\Carbon::now()->translatedFormat('F') }})</p>
+                            <p class="fw-bold text-dark mb-0">Rp {{ number_format($pendapatanBulanIni, 0, ',', '.') }}</p>
                         </div>
                     </div>
                 </div>
