@@ -13,6 +13,7 @@
                     <tr>
                         <th class="ps-4">Nama</th>
                         <th>Email</th>
+                        <th>Nomor HP</th>
                         <th class="text-center">Total Pesanan</th>
                         <th>Tgl Bergabung</th>
                         <th class="text-end pe-4">Aksi</th>
@@ -34,6 +35,7 @@
                             </div>
                         </td>
                         <td>{{ $item->email }}</td>
+                        <td>{{ $item->no_hp ?? '-' }}</td>
                         <td class="text-center">
                             <span class="badge bg-info-subtle text-info border border-info-subtle px-3 py-2 rounded-pill">
                                 {{ $item->pesanans_count }} Pesanan
@@ -60,7 +62,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="text-center py-5 text-muted">Belum ada kustomer terdaftar</td>
+                        <td colspan="6" class="text-center py-5 text-muted">Belum ada kustomer terdaftar</td>
                     </tr>
                     @endforelse
                 </tbody>

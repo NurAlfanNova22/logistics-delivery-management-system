@@ -11,8 +11,12 @@
         <div class="col-lg-4">
             <div class="card shadow-sm border-0">
                 <div class="card-body p-4 text-center">
-                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 80px; height: 80px;">
-                        <i class="bi bi-person-fill fs-1"></i>
+                    <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center mx-auto mb-3 overflow-hidden" style="width: 80px; height: 80px;">
+                        @if($customer->foto)
+                            <img src="{{ asset('storage/' . $customer->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
+                        @else
+                            <i class="bi bi-person-fill fs-1"></i>
+                        @endif
                     </div>
                     <h4 class="fw-bold mb-1">{{ $customer->name }}</h4>
                     <p class="text-muted small mb-3">{{ $customer->email }}</p>
@@ -21,6 +25,14 @@
                         <div class="col-12 mb-2">
                             <span class="d-block text-muted small">ID Akun</span>
                             <span class="fw-medium">#CUST-{{ $customer->id }}</span>
+                        </div>
+                        <div class="col-12 mb-2">
+                            <span class="d-block text-muted small">Nomor HP</span>
+                            <span class="fw-medium text-dark">{{ $customer->no_hp ?? 'Belum diatur' }}</span>
+                        </div>
+                        <div class="col-12 mb-2">
+                            <span class="d-block text-muted small">Alamat</span>
+                            <span class="fw-medium text-dark">{{ $customer->alamat ?? 'Belum diatur' }}</span>
                         </div>
                         <div class="col-12 mb-2">
                             <span class="d-block text-muted small">Bergabung Sejak</span>
