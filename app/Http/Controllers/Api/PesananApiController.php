@@ -86,7 +86,7 @@ class PesananApiController extends Controller
             return response()->json([]);
         }
 
-        $orders = Pesanan::where('sopir_id', $sopir_id)
+        $orders = Pesanan::with('user')->where('sopir_id', $sopir_id)
             ->whereNotNull('sopir_id') // Wajib sudah ter-assign
             ->where('status', '!=', 'DIBATALKAN')
             ->orderBy('created_at','desc')
