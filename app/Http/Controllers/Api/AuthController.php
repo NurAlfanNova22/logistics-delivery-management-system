@@ -132,12 +132,16 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
+            'no_hp' => 'nullable|string',
+            'alamat' => 'nullable|string',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
         $data = [
             'name' => $request->name,
             'email' => $request->email,
+            'no_hp' => $request->no_hp,
+            'alamat' => $request->alamat,
         ];
 
         if ($request->hasFile('foto')) {
