@@ -36,10 +36,11 @@
                     <tr>
                         <th class="ps-4" width="5%">No.</th>
                         <th>Sopir</th>
-                        <th>Kendaraan Aktif</th>
+                        <th>Kendaraan</th>
                         <th class="text-center">Total Muatan Selesai</th>
                         <th class="text-end">Total Omzet (Rp)</th>
-                        <th class="text-end pe-4">Rata-rata/Order (Rp)</th>
+                        <th class="text-end">Rata-rata/Order (Rp)</th>
+                        <th class="text-center pe-4" width="10%">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -92,17 +93,64 @@
                         <td class="text-end fw-bold text-dark">
                             Rp {{ number_format($s->total_pendapatan ?? 0, 0, ',', '.') }}
                         </td>
-                        <td class="text-end pe-4 text-muted">
+                        <td class="text-end text-muted">
                             @if($s->total_selesai > 0)
                                 Rp {{ number_format(($s->total_pendapatan ?? 0) / $s->total_selesai, 0, ',', '.') }}
                             @else
                                 -
                             @endif
                         </td>
+                        <td class="text-center pe-4">
+                            <button class="btn btn-sm btn-outline-primary px-3" type="button" data-bs-toggle="collapse" data-bs-target="#orders-{{ $s->id }}" aria-expanded="false" aria-controls="orders-{{ $s->id }}">
+                                <i class="bi bi-list-ul me-1"></i> Rincian
+                            </button>
+                        </td>
+                    </tr>
+                    <tr class="collapse" id="orders-{{ $s->id }}">
+                        <td colspan="7" class="bg-light p-3">
+                            <div class="card card-body border-0 shadow-sm p-4">
+                                <h6 class="fw-bold mb-3 text-secondary d-flex align-items-center">
+                                    <i class="bi bi-file-earmark-spreadsheet me-2 text-primary"></i>
+                                    Rincian Transaksi Selesai - {{ $s->nama }}
+                                </h6>
+                                @if($s->pesanans->count() > 0)
+                                    <div class="table-responsive">
+                                        <table class="table table-sm table-hover table-bordered bg-white mb-0 align-middle">
+                                            <thead class="table-light">
+                                                <tr>
+                                                    <th width="15%">No. Resi</th>
+                                                    <th width="20%">Tanggal Selesai</th>
+                                                    <th width="25%">Kustomer / Pabrik</th>
+                                                    <th>Alamat Tujuan</th>
+                                                    <th width="15%" class="text-center">Berat Muatan</th>
+                                                    <th width="15%" class="text-end">Omzet (Rp)</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @foreach($s->pesanans as $order)
+                                                    <tr>
+                                                        <td class="fw-bold text-primary">{{ $order->resi }}</td>
+                                                        <td>{{ $order->tanggal_selesai ? $order->tanggal_selesai->format('d M Y, H:i') : '-' }}</td>
+                                                        <td class="fw-medium">{{ $order->nama_pabrik }}</td>
+                                                        <td class="small text-muted">{{ $order->alamat_tujuan_clean }}</td>
+                                                        <td class="text-center">{{ number_format($order->berat / 1000, 1, ',', '.') }} Ton</td>
+                                                        <td class="text-end fw-bold text-success">Rp {{ number_format($order->total_biaya, 0, ',', '.') }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                @else
+                                    <div class="text-muted text-center py-3">
+                                        <i class="bi bi-info-circle me-1"></i> Tidak ada rincian transaksi pada periode ini
+                                    </div>
+                                @endif
+                            </div>
+                        </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center py-5 text-muted">
+                        <td colspan="7" class="text-center py-5 text-muted">
                             <i class="bi bi-person-x d-block fs-1 mb-2 opacity-25"></i>
                             Tidak ada data kinerja sopir pada periode ini.
                         </td>

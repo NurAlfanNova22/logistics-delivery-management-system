@@ -69,6 +69,35 @@
                         Rp {{ number_format($s->total_pendapatan ?? 0, 0, ',', '.') }}
                     </td>
                 </tr>
+                @if($s->pesanans->count() > 0)
+                <tr>
+                    <td></td>
+                    <td colspan="5" style="padding: 5px 10px 10px 10px; background-color: #fafafa;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 10px; border: 1px solid #eee;">
+                            <thead>
+                                <tr style="background-color: #f1f5f9; font-weight: bold; color: #475569;">
+                                    <th style="padding: 4px 8px; border: 1px solid #e2e8f0; font-size: 9px; text-align: left;">No. Resi</th>
+                                    <th style="padding: 4px 8px; border: 1px solid #e2e8f0; font-size: 9px; text-align: left;">Tanggal Selesai</th>
+                                    <th style="padding: 4px 8px; border: 1px solid #e2e8f0; font-size: 9px; text-align: left;">Pabrik/Kustomer</th>
+                                    <th style="padding: 4px 8px; border: 1px solid #e2e8f0; font-size: 9px; text-align: center;">Muatan</th>
+                                    <th style="padding: 4px 8px; border: 1px solid #e2e8f0; font-size: 9px; text-align: right;">Omzet</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($s->pesanans as $order)
+                                    <tr>
+                                        <td style="padding: 4px 8px; border: 1px solid #e2e8f0; color: #0284c7; font-weight: bold;">{{ $order->resi }}</td>
+                                        <td style="padding: 4px 8px; border: 1px solid #e2e8f0; color: #64748b;">{{ $order->tanggal_selesai ? $order->tanggal_selesai->format('d/m/Y H:i') : '-' }}</td>
+                                        <td style="padding: 4px 8px; border: 1px solid #e2e8f0;">{{ $order->nama_pabrik }}</td>
+                                        <td style="padding: 4px 8px; border: 1px solid #e2e8f0; text-align: center;">{{ number_format($order->berat / 1000, 1, ',', '.') }} Ton</td>
+                                        <td style="padding: 4px 8px; border: 1px solid #e2e8f0; text-align: right; color: #16a34a; font-weight: bold;">Rp {{ number_format($order->total_biaya, 0, ',', '.') }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+                @endif
             @empty
                 <tr>
                     <td colspan="6" class="text-center">Tidak ada data kinerja sopir.</td>

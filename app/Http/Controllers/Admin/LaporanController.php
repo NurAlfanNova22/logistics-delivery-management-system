@@ -111,7 +111,13 @@ class LaporanController extends Controller
             $periode = $startDate->format('d M Y') . ' - ' . $endDate->format('d M Y');
         }
 
-        $sopirs = \App\Models\Sopir::with(['kendaraan'])
+        $sopirs = \App\Models\Sopir::with(['kendaraan', 'pesanans' => function ($query) use ($startDate, $endDate) {
+                $query->where('status', 'SELESAI');
+                if ($startDate && $endDate) {
+                    $query->whereBetween('tanggal_selesai', [$startDate, $endDate]);
+                }
+                $query->orderBy('tanggal_selesai', 'desc');
+            }])
             ->withCount(['pesanans as total_selesai' => function ($query) use ($startDate, $endDate) {
                 $query->where('status', 'SELESAI');
                 if ($startDate && $endDate) {
@@ -148,7 +154,13 @@ class LaporanController extends Controller
             $periode = $startDate->format('d M Y') . ' - ' . $endDate->format('d M Y');
         }
 
-        $sopirs = \App\Models\Sopir::with(['kendaraan'])
+        $sopirs = \App\Models\Sopir::with(['kendaraan', 'pesanans' => function ($query) use ($startDate, $endDate) {
+                $query->where('status', 'SELESAI');
+                if ($startDate && $endDate) {
+                    $query->whereBetween('tanggal_selesai', [$startDate, $endDate]);
+                }
+                $query->orderBy('tanggal_selesai', 'desc');
+            }])
             ->withCount(['pesanans as total_selesai' => function ($query) use ($startDate, $endDate) {
                 $query->where('status', 'SELESAI');
                 if ($startDate && $endDate) {
