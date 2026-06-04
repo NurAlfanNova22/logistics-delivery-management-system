@@ -20,10 +20,20 @@
                 <div class="card-body">
                     <div class="row mb-3">
                         <div class="col-md-6 mb-3 mb-md-0">
+                            <span class="d-block text-muted small mb-1">Customer / Pemesan</span>
+                            <span class="fw-bold text-dark">{{ $pesanan->user->name ?? '-' }}</span>
+                            @if(isset($pesanan->user->no_hp))
+                                <br>
+                                <small class="text-muted"><i class="bi bi-telephone-fill me-1"></i>{{ $pesanan->user->no_hp }}</small>
+                            @endif
+                        </div>
+                        <div class="col-md-6">
                             <span class="d-block text-muted small mb-1">Pabrik Pengirim</span>
                             <span class="fw-semibold">{{ $pesanan->nama_pabrik }}</span>
                         </div>
-                        <div class="col-md-6">
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6 mb-3 mb-md-0">
                             <span class="d-block text-muted small mb-1">Tanggal Pesanan</span>
                             <span class="fw-medium">{{ $pesanan->created_at->format('d F Y, H:i') }}</span>
                         </div>

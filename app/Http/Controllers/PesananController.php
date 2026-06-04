@@ -132,7 +132,7 @@ class PesananController extends Controller
 
     public function index(Request $request)
     {
-        $query = Pesanan::with('sopir.kendaraan');
+        $query = Pesanan::with(['sopir.kendaraan', 'user']);
 
         if ($request->status) {
             $query->where('status', 'LIKE', '%' . $request->status . '%');
@@ -164,7 +164,7 @@ class PesananController extends Controller
     {
         $pesanan = Pesanan::with(['sopir.kendaraan', 'checkpoints' => function($q) {
             $q->orderBy('created_at', 'desc');
-        }])->findOrFail($id);
+        }, 'user'])->findOrFail($id);
 
         return view('admin.pesanan.show', compact('pesanan'));
     }

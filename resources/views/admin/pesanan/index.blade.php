@@ -62,6 +62,7 @@
                         <th class="ps-4">No.</th>
                         <th>Tanggal</th>
                         <th>Resi</th>
+                        <th>Customer</th>
                         <th>Pengirim</th>
                         <th>Tujuan</th>
                         <th>Status</th>
@@ -79,6 +80,10 @@
                         </td>
                         <td>
                             <span class="fw-bold text-primary">{{ $item->resi ?? '-' }}</span>
+                        </td>
+                        <td>
+                            <span class="fw-semibold">{{ $item->user->name ?? '-' }}</span><br>
+                            <small class="text-muted"><i class="bi bi-telephone-fill me-1"></i>{{ $item->user->no_hp ?? '-' }}</small>
                         </td>
                         <td>
                             <span class="fw-semibold">{{ $item->nama_pabrik }}</span><br>
@@ -150,7 +155,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="text-center text-muted py-5">
+                        <td colspan="9" class="text-center text-muted py-5">
                             <i class="bi bi-inbox" style="font-size:2rem;display:block;margin-bottom:8px;opacity:0.4"></i>
                             Tidak ada data pesanan
                         </td>
