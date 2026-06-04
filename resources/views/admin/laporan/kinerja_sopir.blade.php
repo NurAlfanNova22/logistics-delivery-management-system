@@ -36,7 +36,8 @@
                     <tr>
                         <th class="ps-4" width="5%">No.</th>
                         <th>Sopir</th>
-                        <th class="text-center">Total Pesanan Selesai</th>
+                        <th>Kendaraan Aktif</th>
+                        <th class="text-center">Total Muatan Selesai</th>
                         <th class="text-end">Total Omzet (Rp)</th>
                         <th class="text-end pe-4">Rata-rata/Order (Rp)</th>
                     </tr>
@@ -47,25 +48,48 @@
                         <td class="ps-4 text-muted">{{ $index + 1 }}.</td>
                         <td>
                             <div class="d-flex align-items-center gap-3">
-                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center overflow-hidden" style="width: 40px; height: 40px;">
+                                <div class="bg-primary bg-opacity-10 text-primary rounded-circle d-flex align-items-center justify-content-center overflow-hidden" style="width: 44px; height: 44px;">
                                     @if($s->foto)
                                         <img src="{{ asset('storage/' . $s->foto) }}" alt="Foto" style="width: 100%; height: 100%; object-fit: cover;">
                                     @else
-                                        <i class="bi bi-person-fill"></i>
+                                        <i class="bi bi-person-fill fs-5"></i>
                                     @endif
                                 </div>
                                 <div>
-                                    <span class="fw-bold d-block">{{ $s->nama }}</span>
-                                    <small class="text-muted">{{ $s->kendaraan->no_polisi ?? '-' }} ({{ $s->kendaraan->merk ?? 'N/A' }})</small>
+                                    <span class="fw-bold d-block text-dark">{{ $s->nama }}</span>
+                                    <small class="text-muted d-block"><i class="bi bi-telephone-fill me-1 small"></i>{{ $s->no_hp ?? '-' }}</small>
+                                    @php
+                                        $status = $s->ketersediaan;
+                                        $badgeClass = 'bg-secondary-subtle text-secondary border border-secondary-subtle';
+                                        if ($status == 'Tersedia') {
+                                            $badgeClass = 'bg-success-subtle text-success border border-success-subtle';
+                                        } elseif ($status == 'Sedang Bertugas') {
+                                            $badgeClass = 'bg-warning-subtle text-warning border border-warning-subtle';
+                                        }
+                                    @endphp
+                                    <span class="badge {{ $badgeClass }} px-2 py-0.5 rounded-pill" style="font-size: 10px; display: inline-block;">
+                                        {{ $status }}
+                                    </span>
                                 </div>
                             </div>
                         </td>
-                        <td class="text-center">
-                            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 rounded-pill">
-                                {{ $s->total_selesai }} Pesanan
-                            </span>
+                        <td>
+                            @if($s->kendaraan)
+                                <span class="fw-bold d-block text-primary">{{ $s->kendaraan->no_polisi }}</span>
+                                <small class="text-muted">{{ $s->kendaraan->merk }} ({{ $s->kendaraan->tipe ?? 'N/A' }})</small>
+                            @else
+                                <span class="text-muted">-</span>
+                            @endif
                         </td>
-                        <td class="text-end fw-bold">
+                        <td class="text-center">
+                            <span class="badge bg-success-subtle text-success border border-success-subtle px-3 py-1.5 rounded-pill fw-bold">
+                                {{ $s->total_selesai }} Order
+                            </span>
+                            <small class="text-muted d-block mt-1">
+                                Muatan: <strong>{{ number_format(($s->total_berat ?? 0) / 1000, 1, ',', '.') }} Ton</strong>
+                            </small>
+                        </td>
+                        <td class="text-end fw-bold text-dark">
                             Rp {{ number_format($s->total_pendapatan ?? 0, 0, ',', '.') }}
                         </td>
                         <td class="text-end pe-4 text-muted">
@@ -78,7 +102,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="5" class="text-center py-5 text-muted">
+                        <td colspan="6" class="text-center py-5 text-muted">
                             <i class="bi bi-person-x d-block fs-1 mb-2 opacity-25"></i>
                             Tidak ada data kinerja sopir pada periode ini.
                         </td>

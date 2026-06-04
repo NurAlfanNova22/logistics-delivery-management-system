@@ -124,6 +124,12 @@ class LaporanController extends Controller
                     $query->whereBetween('tanggal_selesai', [$startDate, $endDate]);
                 }
             }], 'total_biaya')
+            ->withSum(['pesanans as total_berat' => function ($query) use ($startDate, $endDate) {
+                $query->where('status', 'SELESAI');
+                if ($startDate && $endDate) {
+                    $query->whereBetween('tanggal_selesai', [$startDate, $endDate]);
+                }
+            }], 'berat')
             ->orderBy('total_selesai', 'desc')
             ->get();
 
@@ -155,6 +161,12 @@ class LaporanController extends Controller
                     $query->whereBetween('tanggal_selesai', [$startDate, $endDate]);
                 }
             }], 'total_biaya')
+            ->withSum(['pesanans as total_berat' => function ($query) use ($startDate, $endDate) {
+                $query->where('status', 'SELESAI');
+                if ($startDate && $endDate) {
+                    $query->whereBetween('tanggal_selesai', [$startDate, $endDate]);
+                }
+            }], 'berat')
             ->orderBy('total_selesai', 'desc')
             ->get();
 

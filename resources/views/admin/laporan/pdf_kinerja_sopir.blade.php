@@ -29,24 +29,49 @@
         <thead>
             <tr>
                 <th width="5%" class="text-center">No</th>
-                <th width="30%">Nama Sopir</th>
+                <th width="25%">Nama Sopir</th>
                 <th width="20%">Kendaraan</th>
-                <th width="15%" class="text-center">Pesanan Selesai</th>
-                <th width="30%" class="text-right">Total Pendapatan (Rp)</th>
+                <th width="20%" class="text-center">Total Muatan Selesai</th>
+                <th width="15%" class="text-right">Rata-rata/Order</th>
+                <th width="15%" class="text-right">Total Pendapatan</th>
             </tr>
         </thead>
         <tbody>
             @forelse($sopirs as $index => $s)
                 <tr>
                     <td class="text-center">{{ $index + 1 }}</td>
-                    <td><strong>{{ $s->nama }}</strong></td>
-                    <td>{{ $s->kendaraan->no_polisi ?? '-' }}</td>
-                    <td class="text-center">{{ $s->total_selesai }}</td>
-                    <td class="text-right">Rp {{ number_format($s->total_pendapatan ?? 0, 0, ',', '.') }}</td>
+                    <td>
+                        <strong>{{ $s->nama }}</strong>
+                        <div style="font-size: 10px; color: #666; margin-top: 2px;">HP: {{ $s->no_hp ?? '-' }}</div>
+                    </td>
+                    <td>
+                        @if($s->kendaraan)
+                            <strong>{{ $s->kendaraan->no_polisi }}</strong>
+                            <div style="font-size: 10px; color: #666; margin-top: 2px;">{{ $s->kendaraan->merk }}</div>
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td class="text-center">
+                        <strong>{{ $s->total_selesai }} Order</strong>
+                        <div style="font-size: 10px; color: #666; margin-top: 2px;">
+                            {{ number_format(($s->total_berat ?? 0) / 1000, 1, ',', '.') }} Ton
+                        </div>
+                    </td>
+                    <td class="text-right">
+                        @if($s->total_selesai > 0)
+                            Rp {{ number_format(($s->total_pendapatan ?? 0) / $s->total_selesai, 0, ',', '.') }}
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td class="text-right" style="font-weight: bold;">
+                        Rp {{ number_format($s->total_pendapatan ?? 0, 0, ',', '.') }}
+                    </td>
                 </tr>
             @empty
                 <tr>
-                    <td colspan="5" class="text-center">Tidak ada data kinerja sopir.</td>
+                    <td colspan="6" class="text-center">Tidak ada data kinerja sopir.</td>
                 </tr>
             @endforelse
         </tbody>
