@@ -167,6 +167,8 @@ class AuthController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
+            'no_hp' => 'nullable|string',
+            'alamat' => 'nullable|string',
             'foto' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
@@ -176,16 +178,23 @@ class AuthController extends Controller
             'email' => $request->email,
         ]);
 
-        // Update Sopir Photo if exists
-        if ($request->hasFile('foto')) {
-            if ($sopir && $sopir->foto) {
-                Storage::disk('public')->delete($sopir->foto);
+        // Update Sopir
+        if ($sopir) {
+            $sopirData = [
+                'nama' => $request->name,
+                'no_hp' => $request->no_hp,
+                'alamat' => $request->alamat,
+            ];
+
+            // Update Sopir Photo if exists
+            if ($request->hasFile('foto')) {
+                if ($sopir->foto) {
+                    Storage::disk('public')->delete($sopir->foto);
+                }
+                $sopirData['foto'] = $request->file('foto')->store('sopir', 'public');
             }
-            if ($sopir) {
-                $sopir->update([
-                    'foto' => $request->file('foto')->store('sopir', 'public')
-                ]);
-            }
+
+            $sopir->update($sopirData);
         }
 
         return response()->json([
