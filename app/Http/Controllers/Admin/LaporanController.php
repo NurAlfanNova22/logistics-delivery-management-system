@@ -13,32 +13,30 @@ class LaporanController extends Controller
     public function keuangan(Request $request)
     {
         $query = Pesanan::query();
+        $pemasukanLunas = Pesanan::where('status_pembayaran', 'SUDAH DIBAYAR');
+        $tagihanPending = Pesanan::where('status_pembayaran', 'BELUM DIBAYAR');
 
-        // Filter Tanggal
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $query->whereBetween('created_at', [
-                Carbon::parse($request->start_date)->startOfDay(),
-                Carbon::parse($request->end_date)->endOfDay()
-            ]);
+        // Filter Bulan & Tahun
+        if ($request->filled('month') && $request->filled('year')) {
+            $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth();
+            $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
+
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+            $pemasukanLunas->whereBetween('created_at', [$startDate, $endDate]);
+            $tagihanPending->whereBetween('created_at', [$startDate, $endDate]);
+        } 
+        // Filter Tanggal Custom
+        elseif ($request->filled('start_date') && $request->filled('end_date')) {
+            $startDate = Carbon::parse($request->start_date)->startOfDay();
+            $endDate = Carbon::parse($request->end_date)->endOfDay();
+
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+            $pemasukanLunas->whereBetween('created_at', [$startDate, $endDate]);
+            $tagihanPending->whereBetween('created_at', [$startDate, $endDate]);
         }
 
         // Ambil data untuk tabel
         $transaksi = $query->orderBy('created_at', 'desc')->paginate(15);
-
-        // Hitung Ringkasan
-        $pemasukanLunas = Pesanan::where('status_pembayaran', 'SUDAH DIBAYAR');
-        $tagihanPending = Pesanan::where('status_pembayaran', 'BELUM DIBAYAR');
-
-        if ($request->filled('start_date') && $request->filled('end_date')) {
-            $pemasukanLunas->whereBetween('created_at', [
-                Carbon::parse($request->start_date)->startOfDay(),
-                Carbon::parse($request->end_date)->endOfDay()
-            ]);
-            $tagihanPending->whereBetween('created_at', [
-                Carbon::parse($request->start_date)->startOfDay(),
-                Carbon::parse($request->end_date)->endOfDay()
-            ]);
-        }
 
         $totalLunas = $pemasukanLunas->sum('total_biaya');
         $totalPending = $tagihanPending->sum('total_biaya');
@@ -54,7 +52,19 @@ class LaporanController extends Controller
 
         $periode = 'Semua Waktu';
 
-        if ($request->filled('start_date') && $request->filled('end_date')) {
+        // Filter Bulan & Tahun
+        if ($request->filled('month') && $request->filled('year')) {
+            $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth();
+            $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
+
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+            $pemasukanLunas->whereBetween('created_at', [$startDate, $endDate]);
+            $tagihanPending->whereBetween('created_at', [$startDate, $endDate]);
+
+            $periode = $startDate->translatedFormat('F Y');
+        } 
+        // Filter Tanggal Custom
+        elseif ($request->filled('start_date') && $request->filled('end_date')) {
             $startDate = Carbon::parse($request->start_date)->startOfDay();
             $endDate = Carbon::parse($request->end_date)->endOfDay();
 

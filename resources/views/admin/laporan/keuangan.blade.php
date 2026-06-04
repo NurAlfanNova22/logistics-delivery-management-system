@@ -35,22 +35,42 @@
     <div class="card-header bg-white py-3 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-3">
         <h6 class="mb-0 fw-bold text-primary"><i class="bi bi-journal-text me-2"></i>Rincian Transaksi</h6>
         
-        <form action="{{ route('admin.laporan.keuangan') }}" method="GET" class="d-flex align-items-center gap-2">
-            <div class="input-group input-group-sm" style="width: 170px;">
+        <form action="{{ route('admin.laporan.keuangan') }}" method="GET" class="d-flex align-items-center gap-2 flex-wrap">
+            <!-- Filter Bulan/Tahun -->
+            <select name="month" class="form-select form-select-sm" style="width: 120px;" title="Pilih Bulan">
+                <option value="">-- Bulan --</option>
+                @for ($m=1; $m<=12; $m++)
+                    <option value="{{ $m }}" {{ request('month') == $m ? 'selected' : '' }}>
+                        {{ Carbon\Carbon::create(null, $m, 1)->translatedFormat('F') }}
+                    </option>
+                @endfor
+            </select>
+            <select name="year" class="form-select form-select-sm" style="width: 100px;" title="Pilih Tahun">
+                <option value="">-- Tahun --</option>
+                @for ($y = Carbon\Carbon::now()->year; $y >= 2024; $y--)
+                    <option value="{{ $y }}" {{ request('year') == $y ? 'selected' : '' }}>{{ $y }}</option>
+                @endfor
+            </select>
+
+            <span class="text-muted small">atau</span>
+
+            <!-- Filter Custom Tanggal -->
+            <div class="input-group input-group-sm" style="width: 150px;">
                 <span class="input-group-text bg-light"><i class="bi bi-calendar-event small"></i></span>
                 <input type="date" name="start_date" value="{{ request('start_date') }}" class="form-control" title="Dari Tanggal">
             </div>
             <span class="text-muted small">s/d</span>
-            <div class="input-group input-group-sm" style="width: 170px;">
+            <div class="input-group input-group-sm" style="width: 150px;">
                 <span class="input-group-text bg-light"><i class="bi bi-calendar-check small"></i></span>
                 <input type="date" name="end_date" value="{{ request('end_date') }}" class="form-control" title="Sampai Tanggal">
             </div>
+
             <button type="submit" class="btn btn-sm btn-primary px-3">Filter</button>
-            @if(request('start_date') || request('end_date'))
+            @if(request('start_date') || request('end_date') || request('month') || request('year'))
                 <a href="{{ route('admin.laporan.keuangan') }}" class="btn btn-sm btn-outline-secondary">Reset</a>
             @endif
             <div class="vr mx-1 d-none d-md-block text-muted"></div>
-            <a href="{{ route('admin.laporan.exportPdf', request()->only(['start_date', 'end_date'])) }}" class="btn btn-sm btn-danger px-3" target="_blank">
+            <a href="{{ route('admin.laporan.exportPdf', request()->only(['start_date', 'end_date', 'month', 'year'])) }}" class="btn btn-sm btn-danger px-3" target="_blank">
                 <i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF
             </a>
         </form>
@@ -60,7 +80,8 @@
             <table class="table table-hover mb-0">
                 <thead>
                     <tr>
-                        <th class="ps-4">No. Resi</th>
+                        <th class="ps-4" width="5%">No.</th>
+                        <th>No. Resi</th>
                         <th>Tanggal Transaksi</th>
                         <th>Nama Pabrik</th>
                         <th>Tagihan (Rp)</th>
@@ -69,9 +90,10 @@
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($transaksi as $item)
+                    @forelse($transaksi as $index => $item)
                     <tr>
-                        <td class="ps-4 fw-bold text-primary">{{ $item->resi }}</td>
+                        <td class="ps-4 text-muted">{{ $index + $transaksi->firstItem() }}.</td>
+                        <td class="fw-bold text-primary">{{ $item->resi }}</td>
                         <td>{{ $item->created_at->format('d M Y, H:i') }}</td>
                         <td class="fw-medium">{{ $item->nama_pabrik }}</td>
                         <td class="fw-bold">Rp {{ number_format($item->total_biaya ?? 0, 0, ',', '.') }}</td>
@@ -90,7 +112,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" class="text-center py-5 text-muted">
+                        <td colspan="7" class="text-center py-5 text-muted">
                             <i class="bi bi-receipt-cutoff d-block fs-1 mb-2 opacity-25"></i>
                             Tidak ada data transaksi ditemukan
                         </td>
