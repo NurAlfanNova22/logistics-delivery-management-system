@@ -14,7 +14,7 @@
                             <i class="bi bi-box-seam"></i>
                         </div>
                         <div class="text-end">
-                            <p class="text-muted small fw-medium mb-0">Total Pesanan</p>
+                            <p class="text-muted small fw-medium mb-0">Total Semua Pesanan</p>
                             <h2 class="fw-bold mb-0">{{ number_format($totalPesanan) }}</h2>
                         </div>
                     </div>
@@ -24,7 +24,7 @@
                             <p class="fw-bold text-dark mb-0">+{{ $pesananHariIni }}</p>
                         </div>
                         <div class="flex-fill border-start ps-3">
-                            <p class="text-muted small mb-0">Bulan Ini</p>
+                            <p class="text-muted small mb-0">Bulan Ini ({{ Carbon\Carbon::now()->translatedFormat('F') }})</p>
                             <p class="fw-bold text-dark mb-0">+{{ $pesananBulanIni }}</p>
                         </div>
                     </div>
