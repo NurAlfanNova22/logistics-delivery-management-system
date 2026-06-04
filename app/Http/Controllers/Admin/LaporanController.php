@@ -85,7 +85,18 @@ class LaporanController extends Controller
         // Kustomisasi ukuran kertas atau orientasi jika diperlukan
         $pdf->setPaper('A4', 'landscape');
 
-        return $pdf->download('laporan-keuangan-' . Carbon::now()->format('Y-m-d') . '.pdf');
+        $filename = 'laporan-keuangan';
+        if ($request->filled('month') && $request->filled('year')) {
+            $monthName = strtolower(Carbon::createFromDate($request->year, $request->month, 1)->translatedFormat('F'));
+            $filename .= '-' . $monthName . '-' . $request->year;
+        } elseif ($request->filled('start_date') && $request->filled('end_date')) {
+            $filename .= '-' . $request->start_date . '-sd-' . $request->end_date;
+        } else {
+            $filename .= '-semua-waktu';
+        }
+        $filename .= '_' . Carbon::now()->format('His') . '.pdf';
+
+        return $pdf->download($filename);
     }
 
     public function kinerjaSopir(Request $request)
@@ -148,6 +159,15 @@ class LaporanController extends Controller
             ->get();
 
         $pdf = Pdf::loadView('admin.laporan.pdf_kinerja_sopir', compact('sopirs', 'periode'));
-        return $pdf->download('laporan-kinerja-sopir-' . Carbon::now()->format('Y-m-d') . '.pdf');
+        
+        $filename = 'laporan-kinerja-sopir';
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $filename .= '-' . $request->start_date . '-sd-' . $request->end_date;
+        } else {
+            $filename .= '-semua-waktu';
+        }
+        $filename .= '_' . Carbon::now()->format('His') . '.pdf';
+
+        return $pdf->download($filename);
     }
 }
