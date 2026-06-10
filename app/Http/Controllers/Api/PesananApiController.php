@@ -99,7 +99,7 @@ class PesananApiController extends Controller
         return response()->json($orders);
     }
 
-    public function updateStatusPengiriman($id)
+    public function updateStatusPengiriman(Request $request, $id)
     {
         try {
             $pesanan = Pesanan::findOrFail($id);
@@ -125,6 +125,17 @@ class PesananApiController extends Controller
                     ['order_id' => $pesanan->id, 'resi' => $pesanan->resi]
                 );
             } elseif ($statusSekarang == 'DALAM PERJALANAN') {
+                if (!$request->hasFile('bukti_pengiriman')) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Bukti foto pengiriman wajib diunggah!'
+                    ], 400);
+                }
+
+                $file = $request->file('bukti_pengiriman');
+                $path = $file->store('bukti_pengiriman', 'public');
+                $pesanan->bukti_pengiriman = $path;
+
                 $pesanan->status_pengiriman = 'PESANAN TELAH DIKIRIM';
                 
                 $this->createNotification(

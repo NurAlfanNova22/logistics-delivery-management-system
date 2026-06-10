@@ -69,6 +69,19 @@
                     </div>
                     @endif
 
+                    @if($pesanan->bukti_pengiriman)
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="bg-primary bg-opacity-10 border border-primary border-opacity-25 rounded p-3 text-center">
+                                <span class="d-block text-primary fw-semibold small mb-2"><i class="bi bi-image me-1"></i> Bukti Foto Pengiriman (Tiba di Tujuan)</span>
+                                <a href="{{ asset('storage/' . $pesanan->bukti_pengiriman) }}" target="_blank">
+                                    <img src="{{ asset('storage/' . $pesanan->bukti_pengiriman) }}" class="img-thumbnail rounded" style="max-height: 200px;" alt="Bukti Pengiriman">
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     <hr class="text-muted opacity-25">
 
                     <div class="row mb-3">

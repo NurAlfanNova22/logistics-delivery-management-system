@@ -30,7 +30,8 @@ class Pesanan extends Model
         'tanggal_dikirim',
         'tanggal_pemesanan',
         'estimasi_datang',
-        'alasan_penolakan'
+        'alasan_penolakan',
+        'bukti_pengiriman'
     ];
 
     protected $casts = [
