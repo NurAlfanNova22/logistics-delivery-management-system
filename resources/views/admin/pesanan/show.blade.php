@@ -41,15 +41,22 @@
                             <span class="d-block text-muted small mb-1">Tanggal Rencana Kirim (Preorder)</span>
                             @if($pesanan->tanggal_pemesanan)
                                 <span class="fw-bold text-danger"><i class="bi bi-calendar-event me-1"></i>{{ \Carbon\Carbon::parse($pesanan->tanggal_pemesanan)->format('d F Y') }}</span>
-                                @if($pesanan->estimasi_datang)
-                                    <br>
-                                    <span class="text-muted small"><i class="bi bi-clock-history me-1"></i>Estimasi Tiba: <strong>{{ $pesanan->estimasi_datang }}</strong></span>
-                                @endif
                             @else
                                 <span class="text-muted">-</span>
                             @endif
                         </div>
                     </div>
+
+                    @if($pesanan->estimasi_datang)
+                    <div class="row mb-3">
+                        <div class="col-12">
+                            <div class="bg-light border rounded p-2 d-flex justify-content-between align-items-center">
+                                <span class="text-dark fw-semibold small"><i class="bi bi-clock-history me-1 text-primary"></i> Estimasi Pesanan Tiba</span>
+                                <span class="text-primary fw-bold small">{{ $pesanan->estimasi_datang }}</span>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
 
                     @if($pesanan->tanggal_selesai)
                     <div class="row mb-3">
