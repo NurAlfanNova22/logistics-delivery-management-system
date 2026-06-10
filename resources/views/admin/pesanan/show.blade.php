@@ -147,11 +147,16 @@
                         <div class="text-center py-4">
                             <i class="bi bi-emoji-neutral text-muted mb-2 d-block" style="font-size: 2rem;"></i>
                             <span class="text-muted">Belum ada Sopir & Armada yang ditugaskan.</span>
-                            <div class="mt-3">
-                                <a href="{{ route('pesanan.assignForm', $pesanan->id) }}" class="btn btn-primary btn-sm">
-                                    <i class="bi bi-person-plus-fill me-1"></i> Tentukan Sopir
-                                </a>
-                            </div>
+                            @if(strtoupper($pesanan->status) !== 'DITOLAK' && strtoupper($pesanan->status) !== 'DIBATALKAN')
+                                <div class="mt-3 d-flex justify-content-center gap-2">
+                                    <a href="{{ route('pesanan.assignForm', $pesanan->id) }}" class="btn btn-primary btn-sm">
+                                        <i class="bi bi-person-plus-fill me-1"></i> Tentukan Sopir
+                                    </a>
+                                    <button type="button" class="btn btn-outline-danger btn-sm" data-bs-toggle="modal" data-bs-target="#rejectModal">
+                                        <i class="bi bi-x-circle me-1"></i> Tolak Pesanan
+                                    </button>
+                                </div>
+                            @endif
                         </div>
                     @endif
                 </div>
@@ -160,17 +165,20 @@
 
         {{-- Kolom Kanan: Status & Checkpoint --}}
         <div class="col-lg-5">
-            <div class="card shadow-sm border-0 mb-4 bg-primary text-white">
+            <div class="card shadow-sm border-0 mb-4 {{ strtolower($pesanan->status) === 'ditolak' ? 'bg-danger' : (strtolower($pesanan->status) === 'dibatalkan' ? 'bg-secondary' : 'bg-primary') }} text-white">
                 <div class="card-body p-4 text-center">
                     <span class="d-block text-white-50 mb-1">Status Utama</span>
                     <h3 class="fw-bold mb-3">
-                        @if(strtolower($pesanan->status) === 'dibatalkan')
-                            <span class="badge bg-danger">{{ $pesanan->status }}</span>
-                        @else
-                            {{ $pesanan->status }}
-                        @endif
+                        {{ $pesanan->status }}
                     </h3>
                     
+                    @if($pesanan->alasan_penolakan)
+                    <div class="bg-white bg-opacity-20 rounded-3 p-2 mb-2 text-start">
+                        <span class="d-block text-white-50 small mb-1 fw-semibold"><i class="bi bi-info-circle-fill me-1"></i>Alasan Penolakan:</span>
+                        <span class="fw-medium small d-block">{{ $pesanan->alasan_penolakan }}</span>
+                    </div>
+                    @endif
+
                     @if($pesanan->status_pengiriman)
                     <div class="bg-white bg-opacity-10 rounded-3 p-2 mb-0">
                         <span class="d-block text-white-50 small mb-1">Status Pengiriman Pengemudi</span>
@@ -225,6 +233,32 @@
                     @endif
                 </div>
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Tolak Pesanan -->
+<div class="modal fade" id="rejectModal" tabindex="-1" aria-labelledby="rejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content text-dark">
+            <form action="{{ route('pesanan.reject', $pesanan->id) }}" method="POST">
+                @csrf
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-danger" id="rejectModalLabel"><i class="bi bi-x-circle-fill me-2"></i>Tolak Pesanan</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-start">
+                    <p>Apakah Anda yakin ingin menolak pesanan ini? Silakan masukkan alasan penolakan di bawah ini:</p>
+                    <div class="mb-3">
+                        <label for="alasan_penolakan" class="form-label fw-semibold">Alasan Penolakan</label>
+                        <textarea class="form-control" id="alasan_penolakan" name="alasan_penolakan" rows="4" placeholder="Contoh: Lokasi tujuan di luar jangkauan armada kami saat ini, muatan melebihi kapasitas kendaraan, dll." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-danger">Ya, Tolak Pesanan</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

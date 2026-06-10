@@ -91,6 +91,10 @@ Route::middleware([AdminMiddleware::class])
             [PesananController::class, 'updateStatus']
         )->name('pesanan.updateStatus');
 
+        Route::post('/pesanan/{id}/reject',
+            [PesananController::class, 'rejectStore']
+        )->name('pesanan.reject');
+
         /*
         |--------------------------------------
         | RESOURCE PALING BAWAH

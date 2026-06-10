@@ -220,4 +220,33 @@ class PesananController extends Controller
         return redirect()->route('pesanan.index')
             ->with('success', 'Pesanan berhasil dihapus');
     }
+
+    public function rejectStore(Request $request, $id)
+    {
+        $request->validate([
+            'alasan_penolakan' => 'required|string|max:1000'
+        ]);
+
+        $pesanan = Pesanan::findOrFail($id);
+        $pesanan->status = 'DITOLAK';
+        $pesanan->alasan_penolakan = $request->alasan_penolakan;
+        $pesanan->save();
+
+        try {
+            $db = app(\App\Services\FirebaseService::class)->database();
+            // Notifikasi ke Customer
+            $db->getReference('notifications_customer/' . $pesanan->user_id)->push([
+                'title' => 'Pesanan Anda Ditolak ❌',
+                'body' => 'Pesanan dengan resi ' . $pesanan->resi . ' ditolak oleh admin dengan alasan: ' . $request->alasan_penolakan,
+                'type' => 'status_update',
+                'data' => ['order_id' => $pesanan->id, 'resi' => $pesanan->resi],
+                'timestamp' => now()->timestamp * 1000,
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Firebase Notification Error: ' . $e->getMessage());
+        }
+
+        return redirect()->back()
+            ->with('success', 'Pesanan berhasil ditolak');
+    }
 }
