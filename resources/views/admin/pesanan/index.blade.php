@@ -60,7 +60,8 @@
                 <thead>
                     <tr>
                         <th class="ps-4">No.</th>
-                        <th>Tanggal</th>
+                        <th>Tgl Dibuat</th>
+                        <th>Tgl Kirim (Preorder)</th>
                         <th>Resi</th>
                         <th>Customer</th>
                         <th>Pengirim</th>
@@ -77,6 +78,15 @@
                         <td>
                             <span class="fw-semibold" style="font-size:13px">{{ $item->created_at->format('d M Y') }}</span><br>
                             <small class="text-muted">{{ $item->created_at->format('H:i') }}</small>
+                        </td>
+                        <td>
+                            @if($item->tanggal_pemesanan)
+                                <span class="fw-semibold text-danger" style="font-size:13px">
+                                    <i class="bi bi-calendar-event me-1"></i>{{ \Carbon\Carbon::parse($item->tanggal_pemesanan)->format('d M Y') }}
+                                </span>
+                            @else
+                                <span class="text-muted">-</span>
+                            @endif
                         </td>
                         <td>
                             <span class="fw-bold text-primary">{{ $item->resi ?? '-' }}</span>
@@ -155,7 +165,7 @@
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="9" class="text-center text-muted py-5">
+                        <td colspan="10" class="text-center text-muted py-5">
                             <i class="bi bi-inbox" style="font-size:2rem;display:block;margin-bottom:8px;opacity:0.4"></i>
                             Tidak ada data pesanan
                         </td>

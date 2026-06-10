@@ -27,12 +27,14 @@ class Pesanan extends Model
         'payment_url',
         'tanggal_selesai',
         'user_id',
-        'tanggal_dikirim'
+        'tanggal_dikirim',
+        'tanggal_pemesanan'
     ];
 
     protected $casts = [
         'tanggal_selesai' => 'datetime',
         'tanggal_dikirim' => 'datetime',
+        'tanggal_pemesanan' => 'date',
     ];
 
     protected $appends = [

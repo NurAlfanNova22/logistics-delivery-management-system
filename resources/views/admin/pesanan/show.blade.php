@@ -34,8 +34,16 @@
                     </div>
                     <div class="row mb-3">
                         <div class="col-md-6 mb-3 mb-md-0">
-                            <span class="d-block text-muted small mb-1">Tanggal Pesanan</span>
+                            <span class="d-block text-muted small mb-1">Tanggal Pesan (Dibuat)</span>
                             <span class="fw-medium">{{ $pesanan->created_at->format('d F Y, H:i') }}</span>
+                        </div>
+                        <div class="col-md-6">
+                            <span class="d-block text-muted small mb-1">Tanggal Rencana Kirim (Preorder)</span>
+                            @if($pesanan->tanggal_pemesanan)
+                                <span class="fw-bold text-danger"><i class="bi bi-calendar-event me-1"></i>{{ \Carbon\Carbon::parse($pesanan->tanggal_pemesanan)->format('d F Y') }}</span>
+                            @else
+                                <span class="text-muted">-</span>
+                            @endif
                         </div>
                     </div>
 
