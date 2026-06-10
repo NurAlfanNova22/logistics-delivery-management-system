@@ -24,7 +24,8 @@ class PesananApiController extends Controller
             'jenis_barang' => 'required',
             'berat' => 'required|integer',
             'total_biaya' => 'nullable|numeric',
-            'tanggal_pemesanan' => 'required|date'
+            'tanggal_pemesanan' => 'required|date',
+            'estimasi_datang' => 'nullable|string'
         ]);
 
         $tanggal = date('ymd');
@@ -53,7 +54,8 @@ class PesananApiController extends Controller
             'total_biaya' => $request->total_biaya ?? 0,
             'status' => 'MENUNGGU KONFIRMASI',
             'status_pembayaran' => 'BELUM DIBAYAR',
-            'tanggal_pemesanan' => $request->tanggal_pemesanan
+            'tanggal_pemesanan' => $request->tanggal_pemesanan,
+            'estimasi_datang' => $request->estimasi_datang
         ]);
 
         $this->createNotification(

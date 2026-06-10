@@ -84,6 +84,10 @@
                                 <span class="fw-semibold text-danger" style="font-size:13px">
                                     <i class="bi bi-calendar-event me-1"></i>{{ \Carbon\Carbon::parse($item->tanggal_pemesanan)->format('d M Y') }}
                                 </span>
+                                @if($item->estimasi_datang)
+                                    <br>
+                                    <small class="text-muted"><i class="bi bi-clock-history me-1"></i>Est: {{ $item->estimasi_datang }}</small>
+                                @endif
                             @else
                                 <span class="text-muted">-</span>
                             @endif

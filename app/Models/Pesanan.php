@@ -28,7 +28,8 @@ class Pesanan extends Model
         'tanggal_selesai',
         'user_id',
         'tanggal_dikirim',
-        'tanggal_pemesanan'
+        'tanggal_pemesanan',
+        'estimasi_datang'
     ];
 
     protected $casts = [
