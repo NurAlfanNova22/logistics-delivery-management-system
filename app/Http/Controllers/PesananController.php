@@ -155,9 +155,14 @@ class PesananController extends Controller
             $query->where('status_pembayaran', $request->status_pembayaran);
         }
 
-        $pesanan = $query->latest()->paginate(10);
+        if ($request->customer_id) {
+            $query->where('user_id', $request->customer_id);
+        }
 
-        return view('admin.pesanan.index', compact('pesanan'));
+        $pesanan = $query->latest()->paginate(10);
+        $customers = \App\Models\User::where('role', 'customer')->orderBy('name')->get();
+
+        return view('admin.pesanan.index', compact('pesanan', 'customers'));
     }
 
     public function show($id)

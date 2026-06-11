@@ -6,22 +6,35 @@
     {{-- Toolbar --}}
     <div class="d-flex align-items-center gap-3 mb-4">
         <form method="GET" class="d-flex flex-wrap gap-2 align-items-center bg-white p-2 rounded-3 shadow-sm border w-100">
-            <div class="input-group input-group-sm" style="width: 200px;">
+            <div class="input-group input-group-sm" style="width: 180px;">
                 <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
                 <input type="text" name="resi" value="{{ request('resi') }}" placeholder="Cari Resi..." class="form-control border-start-0" onchange="this.form.submit()">
             </div>
 
-            <div class="input-group input-group-sm" style="width: 200px;">
+            <!-- Filter Customer -->
+            <div class="input-group input-group-sm" style="width: 180px;">
+                <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
+                <select name="customer_id" onchange="this.form.submit()" class="form-select border-start-0">
+                    <option value="">Semua Customer</option>
+                    @foreach($customers as $c)
+                        <option value="{{ $c->id }}" {{ request('customer_id') == $c->id ? 'selected' : '' }}>{{ $c->name }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="input-group input-group-sm" style="width: 180px;">
                 <span class="input-group-text bg-light border-end-0"><i class="bi bi-filter text-muted"></i></span>
                 <select name="status" onchange="this.form.submit()" class="form-select border-start-0">
                     <option value="">Semua Status</option>
                     <option value="MENUNGGU KONFIRMASI" {{ request('status') == 'MENUNGGU KONFIRMASI' ? 'selected' : '' }}>Menunggu Konfirmasi</option>
                     <option value="AKTIF" {{ request('status') == 'AKTIF' ? 'selected' : '' }}>Aktif</option>
                     <option value="SELESAI" {{ request('status') == 'SELESAI' ? 'selected' : '' }}>Selesai</option>
+                    <option value="DIBATALKAN" {{ request('status') == 'DIBATALKAN' ? 'selected' : '' }}>Dibatalkan</option>
+                    <option value="DITOLAK" {{ request('status') == 'DITOLAK' ? 'selected' : '' }}>Ditolak</option>
                 </select>
             </div>
 
-            <div class="input-group input-group-sm" style="width: 200px;">
+            <div class="input-group input-group-sm" style="width: 180px;">
                 <span class="input-group-text bg-light border-end-0"><i class="bi bi-cash-coin text-muted"></i></span>
                 <select name="status_pembayaran" onchange="this.form.submit()" class="form-select border-start-0">
                     <option value="">Semua Pembayaran</option>
@@ -30,17 +43,17 @@
                 </select>
             </div>
 
-            <div class="input-group input-group-sm" style="width: 210px;">
+            <div class="input-group input-group-sm" style="width: 200px;">
                 <span class="input-group-text bg-light border-end-0" title="Tanggal Pembuatan Pesanan"><i class="bi bi-calendar3 text-muted"></i> Tgl Pesan</span>
                 <input type="date" name="tanggal" value="{{ request('tanggal') }}" onchange="this.form.submit()" class="form-control border-start-0">
             </div>
 
-            <div class="input-group input-group-sm" style="width: 210px;">
+            <div class="input-group input-group-sm" style="width: 200px;">
                 <span class="input-group-text bg-light border-end-0" title="Tanggal Pesanan Tiba/Selesai"><i class="bi bi-calendar-check text-muted"></i> Tgl Selesai</span>
                 <input type="date" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}" onchange="this.form.submit()" class="form-control border-start-0">
             </div>
 
-            @if(request('status') || request('tanggal') || request('resi') || request('tanggal_sampai'))
+            @if(request('status') || request('tanggal') || request('resi') || request('tanggal_sampai') || request('status_pembayaran') || request('customer_id'))
                 <a href="{{ route('pesanan.index') }}" class="btn btn-sm btn-outline-secondary px-3 ms-auto">
                     <i class="bi bi-x-circle me-1"></i>Reset
                 </a>
