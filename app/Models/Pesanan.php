@@ -44,8 +44,14 @@ class Pesanan extends Model
         'alamat_asal_clean',
         'alamat_tujuan_clean',
         'alamat_asal_coordinate',
-        'alamat_tujuan_coordinate'
+        'alamat_tujuan_coordinate',
+        'bukti_pengiriman_url'
     ];
+
+    public function getBuktiPengirimanUrlAttribute()
+    {
+        return $this->bukti_pengiriman ? asset('storage/' . $this->bukti_pengiriman) : null;
+    }
 
     public function getAlamatAsalCleanAttribute()
     {
