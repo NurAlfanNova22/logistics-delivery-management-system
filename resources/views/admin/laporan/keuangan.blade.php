@@ -46,6 +46,23 @@
                 @endforeach
             </select>
 
+            <!-- Filter Status Pembayaran -->
+            <select name="status_pembayaran" class="form-select form-select-sm" style="width: 140px;" title="Status Pembayaran">
+                <option value="">-- Status Bayar --</option>
+                <option value="SUDAH DIBAYAR" {{ request('status_pembayaran') == 'SUDAH DIBAYAR' ? 'selected' : '' }}>Lunas</option>
+                <option value="BELUM DIBAYAR" {{ request('status_pembayaran') == 'BELUM DIBAYAR' ? 'selected' : '' }}>Belum Bayar</option>
+            </select>
+
+            <!-- Filter Status Pesanan -->
+            <select name="status" class="form-select form-select-sm" style="width: 140px;" title="Status Pesanan">
+                <option value="">-- Status Pesanan --</option>
+                <option value="MENUNGGU KONFIRMASI" {{ request('status') == 'MENUNGGU KONFIRMASI' ? 'selected' : '' }}>Menunggu</option>
+                <option value="AKTIF" {{ request('status') == 'AKTIF' ? 'selected' : '' }}>Aktif</option>
+                <option value="SELESAI" {{ request('status') == 'SELESAI' ? 'selected' : '' }}>Selesai</option>
+                <option value="DIBATALKAN" {{ request('status') == 'DIBATALKAN' ? 'selected' : '' }}>Dibatalkan</option>
+                <option value="DITOLAK" {{ request('status') == 'DITOLAK' ? 'selected' : '' }}>Ditolak</option>
+            </select>
+
             <!-- Filter Bulan/Tahun -->
             <select name="month" class="form-select form-select-sm" style="width: 120px;" title="Pilih Bulan">
                 <option value="">-- Bulan --</option>
@@ -76,11 +93,11 @@
             </div>
 
             <button type="submit" class="btn btn-sm btn-primary px-3">Filter</button>
-            @if(request('start_date') || request('end_date') || request('month') || request('year') || request('customer_id'))
+            @if(request('start_date') || request('end_date') || request('month') || request('year') || request('customer_id') || request('status_pembayaran') || request('status'))
                 <a href="{{ route('admin.laporan.keuangan') }}" class="btn btn-sm btn-outline-secondary">Reset</a>
             @endif
             <div class="vr mx-1 d-none d-md-block text-muted"></div>
-            <a href="{{ route('admin.laporan.exportPdf', request()->only(['start_date', 'end_date', 'month', 'year', 'customer_id'])) }}" class="btn btn-sm btn-danger px-3" target="_blank">
+            <a href="{{ route('admin.laporan.exportPdf', request()->only(['start_date', 'end_date', 'month', 'year', 'customer_id', 'status_pembayaran', 'status'])) }}" class="btn btn-sm btn-danger px-3" target="_blank">
                 <i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF
             </a>
         </form>

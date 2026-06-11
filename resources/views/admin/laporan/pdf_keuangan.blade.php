@@ -95,7 +95,12 @@
     <div class="header">
         <h1>Lancar Ekspedisi</h1>
         <p>Laporan Keuangan & Transaksi</p>
-        <p><strong>Periode:</strong> {{ $periode }} | <strong>Customer:</strong> {{ $selectedCustomerName ?? 'Semua Customer' }}</p>
+        <p>
+            <strong>Periode:</strong> {{ $periode }} | 
+            <strong>Customer:</strong> {{ $selectedCustomerName ?? 'Semua Customer' }} | 
+            <strong>Status Bayar:</strong> {{ $statusPembayaranFilter == 'SUDAH DIBAYAR' ? 'Lunas' : ($statusPembayaranFilter == 'BELUM DIBAYAR' ? 'Belum Bayar' : 'Semua') }} | 
+            <strong>Status Order:</strong> {{ $statusPesananFilter }}
+        </p>
     </div>
 
     <table class="summary-table">

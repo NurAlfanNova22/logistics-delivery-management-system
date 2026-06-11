@@ -13,14 +13,28 @@ class LaporanController extends Controller
     public function keuangan(Request $request)
     {
         $query = Pesanan::query();
-        $pemasukanLunas = Pesanan::where('status_pembayaran', 'SUDAH DIBAYAR');
-        $tagihanPending = Pesanan::where('status_pembayaran', 'BELUM DIBAYAR');
+        $pemasukanLunas = Pesanan::where('status_pembayaran', 'SUDAH DIBAYAR')->whereNotIn('status', ['DIBATALKAN', 'DITOLAK']);
+        $tagihanPending = Pesanan::where('status_pembayaran', 'BELUM DIBAYAR')->whereNotIn('status', ['DIBATALKAN', 'DITOLAK']);
 
         // Filter Customer
         if ($request->filled('customer_id')) {
             $query->where('user_id', $request->customer_id);
             $pemasukanLunas->where('user_id', $request->customer_id);
             $tagihanPending->where('user_id', $request->customer_id);
+        }
+
+        // Filter Status Pembayaran
+        if ($request->filled('status_pembayaran')) {
+            $query->where('status_pembayaran', $request->status_pembayaran);
+            $pemasukanLunas->where('status_pembayaran', $request->status_pembayaran);
+            $tagihanPending->where('status_pembayaran', $request->status_pembayaran);
+        }
+
+        // Filter Status Pesanan
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+            $pemasukanLunas->where('status', $request->status);
+            $tagihanPending->where('status', $request->status);
         }
 
         // Filter Bulan & Tahun
@@ -56,8 +70,8 @@ class LaporanController extends Controller
     public function exportPdf(Request $request)
     {
         $query = Pesanan::query();
-        $pemasukanLunas = Pesanan::where('status_pembayaran', 'SUDAH DIBAYAR');
-        $tagihanPending = Pesanan::where('status_pembayaran', 'BELUM DIBAYAR');
+        $pemasukanLunas = Pesanan::where('status_pembayaran', 'SUDAH DIBAYAR')->whereNotIn('status', ['DIBATALKAN', 'DITOLAK']);
+        $tagihanPending = Pesanan::where('status_pembayaran', 'BELUM DIBAYAR')->whereNotIn('status', ['DIBATALKAN', 'DITOLAK']);
 
         $periode = 'Semua Waktu';
         $selectedCustomerName = 'Semua Customer';
@@ -72,6 +86,20 @@ class LaporanController extends Controller
             if ($cust) {
                 $selectedCustomerName = $cust->name;
             }
+        }
+
+        // Filter Status Pembayaran
+        if ($request->filled('status_pembayaran')) {
+            $query->where('status_pembayaran', $request->status_pembayaran);
+            $pemasukanLunas->where('status_pembayaran', $request->status_pembayaran);
+            $tagihanPending->where('status_pembayaran', $request->status_pembayaran);
+        }
+
+        // Filter Status Pesanan
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+            $pemasukanLunas->where('status', $request->status);
+            $tagihanPending->where('status', $request->status);
         }
 
         // Filter Bulan & Tahun
@@ -102,7 +130,13 @@ class LaporanController extends Controller
         $totalLunas = $pemasukanLunas->sum('total_biaya');
         $totalPending = $tagihanPending->sum('total_biaya');
 
-        $pdf = Pdf::loadView('admin.laporan.pdf_keuangan', compact('transaksi', 'totalLunas', 'totalPending', 'periode', 'selectedCustomerName'));
+        $statusPembayaranFilter = $request->status_pembayaran ?? 'Semua';
+        $statusPesananFilter = $request->status ?? 'Semua';
+
+        $pdf = Pdf::loadView('admin.laporan.pdf_keuangan', compact(
+            'transaksi', 'totalLunas', 'totalPending', 'periode', 
+            'selectedCustomerName', 'statusPembayaranFilter', 'statusPesananFilter'
+        ));
         
         // Kustomisasi ukuran kertas atau orientasi jika diperlukan
         $pdf->setPaper('A4', 'landscape');

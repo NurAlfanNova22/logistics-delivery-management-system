@@ -94,4 +94,102 @@ class LaporanKeuanganTest extends TestCase
         $response->assertStatus(200);
         $response->assertHeader('content-type', 'application/pdf');
     }
+
+    public function test_cancelled_and_rejected_orders_are_excluded_from_totals()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $customer = User::factory()->create(['role' => 'customer']);
+
+        // Order 1: Selesai - Lunas (should be included)
+        Pesanan::create([
+            'user_id' => $customer->id,
+            'resi' => 'LEX111',
+            'nama_pabrik' => 'Pabrik A',
+            'alamat_asal' => 'Asal', 'alamat_tujuan' => 'Tujuan', 'jenis_barang' => 'A', 'berat' => 100,
+            'total_biaya' => 100000,
+            'status' => 'SELESAI',
+            'status_pembayaran' => 'SUDAH DIBAYAR'
+        ]);
+
+        // Order 2: Dibatalkan - Lunas (should be excluded)
+        Pesanan::create([
+            'user_id' => $customer->id,
+            'resi' => 'LEX222',
+            'nama_pabrik' => 'Pabrik A',
+            'alamat_asal' => 'Asal', 'alamat_tujuan' => 'Tujuan', 'jenis_barang' => 'A', 'berat' => 100,
+            'total_biaya' => 200000,
+            'status' => 'DIBATALKAN',
+            'status_pembayaran' => 'SUDAH DIBAYAR'
+        ]);
+
+        // Order 3: Ditolak - Belum Bayar (should be excluded)
+        Pesanan::create([
+            'user_id' => $customer->id,
+            'resi' => 'LEX333',
+            'nama_pabrik' => 'Pabrik A',
+            'alamat_asal' => 'Asal', 'alamat_tujuan' => 'Tujuan', 'jenis_barang' => 'A', 'berat' => 100,
+            'total_biaya' => 300000,
+            'status' => 'DITOLAK',
+            'status_pembayaran' => 'BELUM DIBAYAR'
+        ]);
+
+        // Order 4: Aktif - Belum Bayar (should be included)
+        Pesanan::create([
+            'user_id' => $customer->id,
+            'resi' => 'LEX444',
+            'nama_pabrik' => 'Pabrik A',
+            'alamat_asal' => 'Asal', 'alamat_tujuan' => 'Tujuan', 'jenis_barang' => 'A', 'berat' => 100,
+            'total_biaya' => 400000,
+            'status' => 'AKTIF',
+            'status_pembayaran' => 'BELUM DIBAYAR'
+        ]);
+
+        $response = $this->actingAs($admin)->get('/admin/laporan-keuangan');
+
+        $response->assertStatus(200);
+        // totalLunas should be 100,000 (excluding 200,000)
+        $response->assertViewHas('totalLunas', 100000);
+        // totalPending should be 400,000 (excluding 300,000)
+        $response->assertViewHas('totalPending', 400000);
+    }
+
+    public function test_admin_can_filter_financial_reports_by_payment_and_order_status()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $customer = User::factory()->create(['role' => 'customer']);
+
+        // Order 1: Selesai - Lunas
+        Pesanan::create([
+            'user_id' => $customer->id,
+            'resi' => 'LEX111',
+            'nama_pabrik' => 'Pabrik A',
+            'alamat_asal' => 'Asal', 'alamat_tujuan' => 'Tujuan', 'jenis_barang' => 'A', 'berat' => 100,
+            'total_biaya' => 100000,
+            'status' => 'SELESAI',
+            'status_pembayaran' => 'SUDAH DIBAYAR'
+        ]);
+
+        // Order 2: Aktif - Belum Bayar
+        Pesanan::create([
+            'user_id' => $customer->id,
+            'resi' => 'LEX222',
+            'nama_pabrik' => 'Pabrik B',
+            'alamat_asal' => 'Asal', 'alamat_tujuan' => 'Tujuan', 'jenis_barang' => 'A', 'berat' => 100,
+            'total_biaya' => 200000,
+            'status' => 'AKTIF',
+            'status_pembayaran' => 'BELUM DIBAYAR'
+        ]);
+
+        // Filter by Lunas
+        $response = $this->actingAs($admin)->get('/admin/laporan-keuangan?status_pembayaran=SUDAH DIBAYAR');
+        $response->assertStatus(200);
+        $response->assertSee('Pabrik A');
+        $response->assertDontSee('Pabrik B');
+
+        // Filter by Status Aktif
+        $response = $this->actingAs($admin)->get('/admin/laporan-keuangan?status=AKTIF');
+        $response->assertStatus(200);
+        $response->assertSee('Pabrik B');
+        $response->assertDontSee('Pabrik A');
+    }
 }
