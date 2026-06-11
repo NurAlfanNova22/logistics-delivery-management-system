@@ -95,7 +95,7 @@
     <div class="header">
         <h1>Lancar Ekspedisi</h1>
         <p>Laporan Keuangan & Transaksi</p>
-        <p><strong>Periode:</strong> {{ $periode }}</p>
+        <p><strong>Periode:</strong> {{ $periode }} | <strong>Customer:</strong> {{ $selectedCustomerName ?? 'Semua Customer' }}</p>
     </div>
 
     <table class="summary-table">

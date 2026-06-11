@@ -36,6 +36,16 @@
         <h6 class="mb-0 fw-bold text-primary"><i class="bi bi-journal-text me-2"></i>Rincian Transaksi</h6>
         
         <form action="{{ route('admin.laporan.keuangan') }}" method="GET" class="d-flex align-items-center gap-2 flex-wrap">
+            <!-- Filter Customer -->
+            <select name="customer_id" class="form-select form-select-sm" style="width: 150px;" title="Pilih Customer">
+                <option value="">-- Customer --</option>
+                @foreach($customers as $c)
+                    <option value="{{ $c->id }}" {{ request('customer_id') == $c->id ? 'selected' : '' }}>
+                        {{ $c->name }}
+                    </option>
+                @endforeach
+            </select>
+
             <!-- Filter Bulan/Tahun -->
             <select name="month" class="form-select form-select-sm" style="width: 120px;" title="Pilih Bulan">
                 <option value="">-- Bulan --</option>
@@ -66,11 +76,11 @@
             </div>
 
             <button type="submit" class="btn btn-sm btn-primary px-3">Filter</button>
-            @if(request('start_date') || request('end_date') || request('month') || request('year'))
+            @if(request('start_date') || request('end_date') || request('month') || request('year') || request('customer_id'))
                 <a href="{{ route('admin.laporan.keuangan') }}" class="btn btn-sm btn-outline-secondary">Reset</a>
             @endif
             <div class="vr mx-1 d-none d-md-block text-muted"></div>
-            <a href="{{ route('admin.laporan.exportPdf', request()->only(['start_date', 'end_date', 'month', 'year'])) }}" class="btn btn-sm btn-danger px-3" target="_blank">
+            <a href="{{ route('admin.laporan.exportPdf', request()->only(['start_date', 'end_date', 'month', 'year', 'customer_id'])) }}" class="btn btn-sm btn-danger px-3" target="_blank">
                 <i class="bi bi-file-earmark-pdf-fill me-1"></i> Export PDF
             </a>
         </form>

@@ -16,6 +16,13 @@ class LaporanController extends Controller
         $pemasukanLunas = Pesanan::where('status_pembayaran', 'SUDAH DIBAYAR');
         $tagihanPending = Pesanan::where('status_pembayaran', 'BELUM DIBAYAR');
 
+        // Filter Customer
+        if ($request->filled('customer_id')) {
+            $query->where('user_id', $request->customer_id);
+            $pemasukanLunas->where('user_id', $request->customer_id);
+            $tagihanPending->where('user_id', $request->customer_id);
+        }
+
         // Filter Bulan & Tahun
         if ($request->filled('month') && $request->filled('year')) {
             $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth();
@@ -41,7 +48,9 @@ class LaporanController extends Controller
         $totalLunas = $pemasukanLunas->sum('total_biaya');
         $totalPending = $tagihanPending->sum('total_biaya');
 
-        return view('admin.laporan.keuangan', compact('transaksi', 'totalLunas', 'totalPending'));
+        $customers = \App\Models\User::where('role', 'customer')->orderBy('name')->get();
+
+        return view('admin.laporan.keuangan', compact('transaksi', 'totalLunas', 'totalPending', 'customers'));
     }
 
     public function exportPdf(Request $request)
@@ -51,6 +60,19 @@ class LaporanController extends Controller
         $tagihanPending = Pesanan::where('status_pembayaran', 'BELUM DIBAYAR');
 
         $periode = 'Semua Waktu';
+        $selectedCustomerName = 'Semua Customer';
+
+        // Filter Customer
+        if ($request->filled('customer_id')) {
+            $query->where('user_id', $request->customer_id);
+            $pemasukanLunas->where('user_id', $request->customer_id);
+            $tagihanPending->where('user_id', $request->customer_id);
+
+            $cust = \App\Models\User::find($request->customer_id);
+            if ($cust) {
+                $selectedCustomerName = $cust->name;
+            }
+        }
 
         // Filter Bulan & Tahun
         if ($request->filled('month') && $request->filled('year')) {
@@ -80,12 +102,15 @@ class LaporanController extends Controller
         $totalLunas = $pemasukanLunas->sum('total_biaya');
         $totalPending = $tagihanPending->sum('total_biaya');
 
-        $pdf = Pdf::loadView('admin.laporan.pdf_keuangan', compact('transaksi', 'totalLunas', 'totalPending', 'periode'));
+        $pdf = Pdf::loadView('admin.laporan.pdf_keuangan', compact('transaksi', 'totalLunas', 'totalPending', 'periode', 'selectedCustomerName'));
         
         // Kustomisasi ukuran kertas atau orientasi jika diperlukan
         $pdf->setPaper('A4', 'landscape');
 
         $filename = 'laporan-keuangan';
+        if ($request->filled('customer_id')) {
+            $filename .= '-' . \Str::slug($selectedCustomerName);
+        }
         if ($request->filled('month') && $request->filled('year')) {
             $monthName = strtolower(Carbon::createFromDate($request->year, $request->month, 1)->translatedFormat('F'));
             $filename .= '-' . $monthName . '-' . $request->year;

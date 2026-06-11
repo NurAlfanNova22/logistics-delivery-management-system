@@ -24,6 +24,36 @@ Route::get('/login', [AuthController::class, 'login'])->name('login');
 Route::post('/login', [AuthController::class, 'authenticate']);
 Route::get('/logout', [AuthController::class, 'logout']);
 
+// Temporary Deployment Helper Routes (Can be deleted after use)
+Route::get('/run-migration-temporary', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+        return "Migration Success:<br><pre>" . \Illuminate\Support\Facades\Artisan::output() . "</pre>";
+    } catch (\Exception $e) {
+        return "Migration Failed: " . $e->getMessage();
+    }
+});
+
+Route::get('/clear-cache-temporary', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('route:clear');
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        return "Cache Cleared Success";
+    } catch (\Exception $e) {
+        return "Cache Clear Failed: " . $e->getMessage();
+    }
+});
+
+Route::get('/storage-link-temporary', function() {
+    try {
+        \Illuminate\Support\Facades\Artisan::call('storage:link');
+        return "Storage Link Success";
+    } catch (\Exception $e) {
+        return "Storage Link Failed: " . $e->getMessage();
+    }
+});
+
 /*
 |--------------------------------------------------------------------------
 | Admin Routes (Protected)
