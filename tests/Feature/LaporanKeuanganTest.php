@@ -192,4 +192,72 @@ class LaporanKeuanganTest extends TestCase
         $response->assertSee('Pabrik B');
         $response->assertDontSee('Pabrik A');
     }
+
+    public function test_admin_can_view_rekapitulasi_per_customer_and_export_rekap_pdf()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        $customerA = User::factory()->create(['role' => 'customer', 'name' => 'Customer Alpha']);
+        $customerB = User::factory()->create(['role' => 'customer', 'name' => 'Customer Beta']);
+
+        // Order 1: Customer A - Lunas
+        Pesanan::create([
+            'user_id' => $customerA->id,
+            'resi' => 'LEX-A1',
+            'nama_pabrik' => 'Pabrik A',
+            'alamat_asal' => 'Asal', 'alamat_tujuan' => 'Tujuan', 'jenis_barang' => 'A', 'berat' => 100,
+            'total_biaya' => 100000,
+            'status' => 'SELESAI',
+            'status_pembayaran' => 'SUDAH DIBAYAR'
+        ]);
+
+        // Order 2: Customer A - Belum Bayar
+        Pesanan::create([
+            'user_id' => $customerA->id,
+            'resi' => 'LEX-A2',
+            'nama_pabrik' => 'Pabrik A',
+            'alamat_asal' => 'Asal', 'alamat_tujuan' => 'Tujuan', 'jenis_barang' => 'A', 'berat' => 100,
+            'total_biaya' => 50000,
+            'status' => 'AKTIF',
+            'status_pembayaran' => 'BELUM DIBAYAR'
+        ]);
+
+        // Order 3: Customer B - Belum Bayar
+        Pesanan::create([
+            'user_id' => $customerB->id,
+            'resi' => 'LEX-B1',
+            'nama_pabrik' => 'Pabrik B',
+            'alamat_asal' => 'Asal', 'alamat_tujuan' => 'Tujuan', 'jenis_barang' => 'B', 'berat' => 200,
+            'total_biaya' => 200000,
+            'status' => 'AKTIF',
+            'status_pembayaran' => 'BELUM DIBAYAR'
+        ]);
+
+        // Access the reports page
+        $response = $this->actingAs($admin)->get('/admin/laporan-keuangan');
+        $response->assertStatus(200);
+        $response->assertViewHas('rekapCustomer');
+
+        // Check view data content
+        $rekapCustomer = $response->viewData('rekapCustomer');
+        $this->assertCount(2, $rekapCustomer);
+
+        $rekapA = $rekapCustomer->firstWhere('user_id', $customerA->id);
+        $rekapB = $rekapCustomer->firstWhere('user_id', $customerB->id);
+
+        $this->assertNotNull($rekapA);
+        $this->assertNotNull($rekapB);
+
+        $this->assertEquals(2, $rekapA->total_pesanan);
+        $this->assertEquals(100000, $rekapA->total_lunas);
+        $this->assertEquals(50000, $rekapA->total_pending);
+
+        $this->assertEquals(1, $rekapB->total_pesanan);
+        $this->assertEquals(0, $rekapB->total_lunas);
+        $this->assertEquals(200000, $rekapB->total_pending);
+
+        // Try to export rekap PDF
+        $pdfResponse = $this->actingAs($admin)->get('/admin/laporan-keuangan/export-pdf?mode=rekap');
+        $pdfResponse->assertStatus(200);
+        $pdfResponse->assertHeader('content-type', 'application/pdf');
+    }
 }

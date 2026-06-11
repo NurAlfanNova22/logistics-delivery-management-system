@@ -33,7 +33,19 @@
 
 <div class="card shadow-sm border-0">
     <div class="card-header bg-white py-3 border-bottom d-flex flex-wrap align-items-center justify-content-between gap-3">
-        <h6 class="mb-0 fw-bold text-primary"><i class="bi bi-journal-text me-2"></i>Rincian Transaksi</h6>
+        <!-- Tabs Kontrol -->
+        <ul class="nav nav-pills card-header-pills" id="laporanTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active btn-sm" id="transaksi-tab" data-bs-toggle="tab" data-bs-target="#transaksi" type="button" role="tab" aria-controls="transaksi" aria-selected="true">
+                    <i class="bi bi-list-ul me-1"></i> Rincian Transaksi
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link btn-sm" id="rekap-tab" data-bs-toggle="tab" data-bs-target="#rekap" type="button" role="tab" aria-controls="rekap" aria-selected="false">
+                    <i class="bi bi-people-fill me-1"></i> Rekap per Customer
+                </button>
+            </li>
+        </ul>
         
         <form action="{{ route('admin.laporan.keuangan') }}" method="GET" class="d-flex align-items-center gap-2 flex-wrap">
             <!-- Filter Customer -->
@@ -102,57 +114,114 @@
             </a>
         </form>
     </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead>
-                    <tr>
-                        <th class="ps-4" width="5%">No.</th>
-                        <th>No. Resi</th>
-                        <th>Tanggal Transaksi</th>
-                        <th>Nama Pabrik</th>
-                        <th>Tagihan (Rp)</th>
-                        <th>Status Bayar</th>
-                        <th>Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($transaksi as $index => $item)
-                    <tr>
-                        <td class="ps-4 text-muted">{{ $index + $transaksi->firstItem() }}.</td>
-                        <td class="fw-bold text-primary">{{ $item->resi }}</td>
-                        <td>{{ $item->created_at->format('d M Y, H:i') }}</td>
-                        <td class="fw-medium">{{ $item->nama_pabrik }}</td>
-                        <td class="fw-bold">Rp {{ number_format($item->total_biaya ?? 0, 0, ',', '.') }}</td>
-                        <td>
-                            @if(strtoupper($item->status_pembayaran) == 'SUDAH DIBAYAR')
-                                <span class="badge bg-success-subtle text-success border border-success-subtle px-2">Lunas ✅</span>
-                            @else
-                                <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2">Belum Bayar</span>
-                            @endif
-                        </td>
-                        <td>
-                            <a href="{{ route('pesanan.show', $item->id) }}" class="btn btn-sm btn-light border">
-                                <i class="bi bi-search"></i>
-                            </a>
-                        </td>
-                    </tr>
-                    @empty
-                    <tr>
-                        <td colspan="7" class="text-center py-5 text-muted">
-                            <i class="bi bi-receipt-cutoff d-block fs-1 mb-2 opacity-25"></i>
-                            Tidak ada data transaksi ditemukan
-                        </td>
-                    </tr>
-                    @endforelse
-                </tbody>
-            </table>
+
+    <div class="tab-content" id="laporanTabContent">
+        <!-- Tab Rincian Transaksi -->
+        <div class="tab-pane fade show active" id="transaksi" role="tabpanel" aria-labelledby="transaksi-tab">
+            <div class="card-body p-0">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4" width="5%">No.</th>
+                                <th>No. Resi</th>
+                                <th>Tanggal Transaksi</th>
+                                <th>Nama Pabrik</th>
+                                <th>Tagihan (Rp)</th>
+                                <th>Status Bayar</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($transaksi as $index => $item)
+                            <tr>
+                                <td class="ps-4 text-muted">{{ $index + $transaksi->firstItem() }}.</td>
+                                <td class="fw-bold text-primary">{{ $item->resi }}</td>
+                                <td>{{ $item->created_at->format('d M Y, H:i') }}</td>
+                                <td class="fw-medium">{{ $item->nama_pabrik }}</td>
+                                <td class="fw-bold">Rp {{ number_format($item->total_biaya ?? 0, 0, ',', '.') }}</td>
+                                <td>
+                                    @if(strtoupper($item->status_pembayaran) == 'SUDAH DIBAYAR')
+                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2">Lunas ✅</span>
+                                    @else
+                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2">Belum Bayar</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    <a href="{{ route('pesanan.show', $item->id) }}" class="btn btn-sm btn-light border">
+                                        <i class="bi bi-search"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="7" class="text-center py-5 text-muted">
+                                    <i class="bi bi-receipt-cutoff d-block fs-1 mb-2 opacity-25"></i>
+                                    Tidak ada data transaksi ditemukan
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @if($transaksi->hasPages())
+            <div class="card-footer bg-white py-3 border-top">
+                {{ $transaksi->links() }}
+            </div>
+            @endif
+        </div>
+
+        <!-- Tab Rekap per Customer -->
+        <div class="tab-pane fade" id="rekap" role="tabpanel" aria-labelledby="rekap-tab">
+            <div class="card-body p-0">
+                <div class="p-3 bg-light border-bottom d-flex flex-wrap justify-content-between align-items-center gap-2">
+                    <span class="text-muted small">
+                        <i class="bi bi-info-circle me-1"></i> Menampilkan rekapitulasi akumulasi transaksi per customer berdasarkan filter waktu terpilih.
+                    </span>
+                    <a href="{{ route('admin.laporan.exportPdf', array_merge(request()->only(['start_date', 'end_date', 'month', 'year']), ['mode' => 'rekap'])) }}" class="btn btn-sm btn-danger px-3" target="_blank">
+                        <i class="bi bi-file-earmark-pdf-fill me-1"></i> Export Rekap PDF
+                    </a>
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4" width="5%">No.</th>
+                                <th>Nama Customer</th>
+                                <th>Total Pesanan</th>
+                                <th>Total Pemasukan Lunas (Rp)</th>
+                                <th>Total Piutang (Rp)</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($rekapCustomer as $index => $item)
+                            <tr>
+                                <td class="ps-4 text-muted">{{ $index + 1 }}.</td>
+                                <td class="fw-bold">{{ $item->user->name ?? 'Customer Tidak Diketahui' }}</td>
+                                <td><span class="badge bg-secondary">{{ $item->total_pesanan }} Pesanan</span></td>
+                                <td class="fw-bold text-success">Rp {{ number_format($item->total_lunas, 0, ',', '.') }}</td>
+                                <td class="fw-bold text-danger">Rp {{ number_format($item->total_pending, 0, ',', '.') }}</td>
+                                <td>
+                                    <a href="{{ route('admin.laporan.keuangan', ['customer_id' => $item->user_id] + request()->only(['start_date', 'end_date', 'month', 'year'])) }}" class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-funnel-fill me-1"></i> Saring Rincian
+                                    </a>
+                                </td>
+                            </tr>
+                            @empty
+                            <tr>
+                                <td colspan="6" class="text-center py-5 text-muted">
+                                    <i class="bi bi-people d-block fs-1 mb-2 opacity-25"></i>
+                                    Tidak ada data rekapitulasi customer
+                                </td>
+                            </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
+            </div>
         </div>
     </div>
-    @if($transaksi->hasPages())
-    <div class="card-footer bg-white py-3 border-top">
-        {{ $transaksi->links() }}
-    </div>
-    @endif
 </div>
 @endsection

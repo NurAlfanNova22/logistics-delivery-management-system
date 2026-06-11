@@ -64,11 +64,67 @@ class LaporanController extends Controller
 
         $customers = \App\Models\User::where('role', 'customer')->orderBy('name')->get();
 
-        return view('admin.laporan.keuangan', compact('transaksi', 'totalLunas', 'totalPending', 'customers'));
+        // Rekapitulasi per Customer
+        $rekapQuery = Pesanan::selectRaw('user_id, 
+                count(*) as total_pesanan, 
+                sum(case when status_pembayaran = "SUDAH DIBAYAR" and status not in ("DIBATALKAN", "DITOLAK") then total_biaya else 0 end) as total_lunas, 
+                sum(case when status_pembayaran = "BELUM DIBAYAR" and status not in ("DIBATALKAN", "DITOLAK") then total_biaya else 0 end) as total_pending')
+            ->groupBy('user_id')
+            ->with('user');
+
+        if ($request->filled('month') && $request->filled('year')) {
+            $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth();
+            $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
+            $rekapQuery->whereBetween('created_at', [$startDate, $endDate]);
+        } elseif ($request->filled('start_date') && $request->filled('end_date')) {
+            $startDate = Carbon::parse($request->start_date)->startOfDay();
+            $endDate = Carbon::parse($request->end_date)->endOfDay();
+            $rekapQuery->whereBetween('created_at', [$startDate, $endDate]);
+        }
+
+        $rekapCustomer = $rekapQuery->get();
+
+        return view('admin.laporan.keuangan', compact('transaksi', 'totalLunas', 'totalPending', 'customers', 'rekapCustomer'));
     }
 
     public function exportPdf(Request $request)
     {
+        if ($request->mode === 'rekap') {
+            $rekapQuery = Pesanan::selectRaw('user_id, 
+                    count(*) as total_pesanan, 
+                    sum(case when status_pembayaran = "SUDAH DIBAYAR" and status not in ("DIBATALKAN", "DITOLAK") then total_biaya else 0 end) as total_lunas, 
+                    sum(case when status_pembayaran = "BELUM DIBAYAR" and status not in ("DIBATALKAN", "DITOLAK") then total_biaya else 0 end) as total_pending')
+                ->groupBy('user_id')
+                ->with('user');
+
+            $periode = 'Semua Waktu';
+
+            // Filter Bulan & Tahun
+            if ($request->filled('month') && $request->filled('year')) {
+                $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth();
+                $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
+                $rekapQuery->whereBetween('created_at', [$startDate, $endDate]);
+                $periode = $startDate->translatedFormat('F Y');
+            } 
+            // Filter Tanggal Custom
+            elseif ($request->filled('start_date') && $request->filled('end_date')) {
+                $startDate = Carbon::parse($request->start_date)->startOfDay();
+                $endDate = Carbon::parse($request->end_date)->endOfDay();
+                $rekapQuery->whereBetween('created_at', [$startDate, $endDate]);
+                $periode = $startDate->format('d M Y') . ' - ' . $endDate->format('d M Y');
+            }
+
+            $rekapCustomer = $rekapQuery->get();
+            $totalSemuaLunas = $rekapCustomer->sum('total_lunas');
+            $totalSemuaPending = $rekapCustomer->sum('total_pending');
+
+            $pdf = Pdf::loadView('admin.laporan.pdf_rekap_customer', compact(
+                'rekapCustomer', 'periode', 'totalSemuaLunas', 'totalSemuaPending'
+            ));
+
+            return $pdf->download('laporan-rekap-keuangan-customer.pdf');
+        }
+
         $query = Pesanan::query();
         $pemasukanLunas = Pesanan::where('status_pembayaran', 'SUDAH DIBAYAR')->whereNotIn('status', ['DIBATALKAN', 'DITOLAK']);
         $tagihanPending = Pesanan::where('status_pembayaran', 'BELUM DIBAYAR')->whereNotIn('status', ['DIBATALKAN', 'DITOLAK']);
