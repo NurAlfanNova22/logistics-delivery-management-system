@@ -44,16 +44,16 @@
             </div>
 
             <div class="input-group input-group-sm" style="width: 200px;">
-                <span class="input-group-text bg-light border-end-0" title="Tanggal Pembuatan Pesanan"><i class="bi bi-calendar3 text-muted"></i> Tgl Pesan</span>
-                <input type="date" name="tanggal" value="{{ request('tanggal') }}" onchange="this.form.submit()" class="form-control border-start-0">
+                <span class="input-group-text bg-light border-end-0" title="Dari Tanggal"><i class="bi bi-calendar3 text-muted"></i> Dari Tgl</span>
+                <input type="date" name="start_date" value="{{ request('start_date') }}" onchange="this.form.submit()" class="form-control border-start-0">
             </div>
 
             <div class="input-group input-group-sm" style="width: 200px;">
-                <span class="input-group-text bg-light border-end-0" title="Tanggal Pesanan Tiba/Selesai"><i class="bi bi-calendar-check text-muted"></i> Tgl Selesai</span>
-                <input type="date" name="tanggal_sampai" value="{{ request('tanggal_sampai') }}" onchange="this.form.submit()" class="form-control border-start-0">
+                <span class="input-group-text bg-light border-end-0" title="Sampai Tanggal"><i class="bi bi-calendar-check text-muted"></i> Sampai Tgl</span>
+                <input type="date" name="end_date" value="{{ request('end_date') }}" onchange="this.form.submit()" class="form-control border-start-0">
             </div>
 
-            @if(request('status') || request('tanggal') || request('resi') || request('tanggal_sampai') || request('status_pembayaran') || request('customer_id'))
+            @if(request('status') || request('start_date') || request('end_date') || request('resi') || request('status_pembayaran') || request('customer_id'))
                 <a href="{{ route('pesanan.index') }}" class="btn btn-sm btn-outline-secondary px-3 ms-auto">
                     <i class="bi bi-x-circle me-1"></i>Reset
                 </a>

@@ -82,4 +82,53 @@ class AdminPesananTest extends TestCase
         $response->assertDontSee('LEX-A');
         $response->assertDontSee('LEX-B');
     }
+
+    public function test_admin_can_filter_orders_by_date_range()
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        
+        // Order 1: Tanggal 2026-04-10
+        $p1 = new Pesanan([
+            'resi' => 'LEX-APR-10',
+            'nama_pabrik' => 'Pabrik A',
+            'alamat_asal' => 'Asal', 'alamat_tujuan' => 'Tujuan', 'jenis_barang' => 'A', 'berat' => 100,
+            'total_biaya' => 100000,
+            'status' => 'SELESAI',
+            'status_pembayaran' => 'SUDAH DIBAYAR'
+        ]);
+        $p1->created_at = '2026-04-10 10:00:00';
+        $p1->save();
+
+        // Order 2: Tanggal 2026-04-22
+        $p2 = new Pesanan([
+            'resi' => 'LEX-APR-22',
+            'nama_pabrik' => 'Pabrik B',
+            'alamat_asal' => 'Asal', 'alamat_tujuan' => 'Tujuan', 'jenis_barang' => 'B', 'berat' => 200,
+            'total_biaya' => 200000,
+            'status' => 'SELESAI',
+            'status_pembayaran' => 'SUDAH DIBAYAR'
+        ]);
+        $p2->created_at = '2026-04-22 10:00:00';
+        $p2->save();
+
+        // Order 3: Tanggal 2026-05-05
+        $p3 = new Pesanan([
+            'resi' => 'LEX-MAY-05',
+            'nama_pabrik' => 'Pabrik C',
+            'alamat_asal' => 'Asal', 'alamat_tujuan' => 'Tujuan', 'jenis_barang' => 'C', 'berat' => 300,
+            'total_biaya' => 300000,
+            'status' => 'SELESAI',
+            'status_pembayaran' => 'SUDAH DIBAYAR'
+        ]);
+        $p3->created_at = '2026-05-05 10:00:00';
+        $p3->save();
+
+        // Filter range: 2026-04-01 s/d 2026-04-25 (Hanya LEX-APR-10 dan LEX-APR-22 yang muncul)
+        $response = $this->actingAs($admin)
+            ->get('/admin/pesanan?start_date=2026-04-01&end_date=2026-04-25');
+        $response->assertStatus(200);
+        $response->assertSee('LEX-APR-10');
+        $response->assertSee('LEX-APR-22');
+        $response->assertDontSee('LEX-MAY-05');
+    }
 }

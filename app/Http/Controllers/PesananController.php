@@ -142,13 +142,15 @@ class PesananController extends Controller
             $query->where('resi', 'LIKE', '%' . $request->resi . '%');
         }
 
-        if ($request->tanggal) {
-            $query->whereDate('created_at', $request->tanggal);
-        }
-
-        if ($request->tanggal_sampai) {
-            $query->whereDate('tanggal_selesai', $request->tanggal_sampai)
-                  ->where('status', 'SELESAI');
+        if ($request->start_date && $request->end_date) {
+            $query->whereBetween('created_at', [
+                \Carbon\Carbon::parse($request->start_date)->startOfDay(),
+                \Carbon\Carbon::parse($request->end_date)->endOfDay()
+            ]);
+        } elseif ($request->start_date) {
+            $query->where('created_at', '>=', \Carbon\Carbon::parse($request->start_date)->startOfDay());
+        } elseif ($request->end_date) {
+            $query->where('created_at', '<=', \Carbon\Carbon::parse($request->end_date)->endOfDay());
         }
 
         if ($request->status_pembayaran) {
