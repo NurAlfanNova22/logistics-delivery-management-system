@@ -1,0 +1,395 @@
+<?php
+
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use App\Models\User;
+use App\Models\Pesanan;
+use Illuminate\Support\Facades\Hash;
+use Carbon\Carbon;
+
+class DummyPesananSeeder extends Seeder
+{
+    public function run(): void
+    {
+        // 1. Buat Dummy Customers
+        $customersData = [
+            [
+                'id' => 101,
+                'name' => 'PT. Sinar Jaya',
+                'email' => 'sinarjaya@mail.com',
+                'password' => Hash::make('password123'),
+                'role' => 'customer',
+                'no_hp' => '081234567890',
+                'alamat' => 'Jl. Kawasan Industri No. 12, Cilegon'
+            ],
+            [
+                'id' => 102,
+                'name' => 'CV. Abadi Makmur',
+                'email' => 'abadimakmur@mail.com',
+                'password' => Hash::make('password123'),
+                'role' => 'customer',
+                'no_hp' => '081234567891',
+                'alamat' => 'Jl. Raya Gresik No. 45, Gresik'
+            ],
+            [
+                'id' => 103,
+                'name' => 'PT. Indofood Sukses',
+                'email' => 'indofood@mail.com',
+                'password' => Hash::make('password123'),
+                'role' => 'customer',
+                'no_hp' => '081234567892',
+                'alamat' => 'Kawasan Industri Sudirman, Jakarta'
+            ],
+            [
+                'id' => 104,
+                'name' => 'CV. Tunas Baru',
+                'email' => 'tunasbaru@mail.com',
+                'password' => Hash::make('password123'),
+                'role' => 'customer',
+                'no_hp' => '081234567893',
+                'alamat' => 'Jl. Sidoarjo Industri Indah No. 8, Sidoarjo'
+            ],
+            [
+                'id' => 105,
+                'name' => 'PT. Steel Indonesia',
+                'email' => 'steelindo@mail.com',
+                'password' => Hash::make('password123'),
+                'role' => 'customer',
+                'no_hp' => '081234567894',
+                'alamat' => 'Kawasan Industri Cikarang, Bekasi'
+            ]
+        ];
+
+        foreach ($customersData as $c) {
+            User::updateOrCreate(
+                ['id' => $c['id']],
+                [
+                    'name' => $c['name'],
+                    'email' => $c['email'],
+                    'password' => $c['password'],
+                    'role' => $c['role'],
+                    'no_hp' => $c['no_hp'],
+                    'alamat' => $c['alamat']
+                ]
+            );
+        }
+
+        // 2. Data Dummy Pesanan
+        $orders = [
+            // --- JANUARI 2026 ---
+            [
+                'user_id' => 101,
+                'resi' => 'LEX260105001',
+                'nama_pabrik' => 'Pabrik Baja Cilegon',
+                'alamat_asal' => 'Cilegon @-6.01,106.02',
+                'alamat_tujuan' => 'Tangerang @-6.17,106.63',
+                'jenis_barang' => 'Besi Ulir',
+                'berat' => 5000,
+                'status' => 'SELESAI',
+                'status_pengiriman' => 'PESANAN TELAH DIKIRIM',
+                'total_biaya' => 2500000,
+                'status_pembayaran' => 'SUDAH DIBAYAR',
+                'created_at' => Carbon::create(2026, 1, 5, 10, 0, 0),
+            ],
+            [
+                'user_id' => 102,
+                'resi' => 'LEX260112001',
+                'nama_pabrik' => 'Pabrik Semen Gresik',
+                'alamat_asal' => 'Gresik @-7.15,112.65',
+                'alamat_tujuan' => 'Surabaya @-7.25,112.75',
+                'jenis_barang' => 'Semen Portland',
+                'berat' => 8000,
+                'status' => 'SELESAI',
+                'status_pengiriman' => 'PESANAN TELAH DIKIRIM',
+                'total_biaya' => 3200000,
+                'status_pembayaran' => 'SUDAH DIBAYAR',
+                'created_at' => Carbon::create(2026, 1, 12, 11, 30, 0),
+            ],
+            [
+                'user_id' => 103,
+                'resi' => 'LEX260120001',
+                'nama_pabrik' => 'Pabrik Tepung Bogasari',
+                'alamat_asal' => 'Jakarta Utara @-6.11,106.89',
+                'alamat_tujuan' => 'Bekasi @-6.23,106.99',
+                'jenis_barang' => 'Tepung Terigu',
+                'berat' => 4000,
+                'status' => 'DIBATALKAN',
+                'status_pengiriman' => '',
+                'total_biaya' => 1800000,
+                'status_pembayaran' => 'BELUM DIBAYAR',
+                'created_at' => Carbon::create(2026, 1, 20, 14, 15, 0),
+            ],
+
+            // --- FEBRUARI 2026 ---
+            [
+                'user_id' => 104,
+                'resi' => 'LEX260202001',
+                'nama_pabrik' => 'Pabrik Kertas Tjiwi Kimia',
+                'alamat_asal' => 'Sidoarjo @-7.47,112.43',
+                'alamat_tujuan' => 'Mojokerto @-7.46,112.43',
+                'jenis_barang' => 'Kertas HVS',
+                'berat' => 6000,
+                'status' => 'SELESAI',
+                'status_pengiriman' => 'PESANAN TELAH DIKIRIM',
+                'total_biaya' => 2800000,
+                'status_pembayaran' => 'SUDAH DIBAYAR',
+                'created_at' => Carbon::create(2026, 2, 2, 9, 45, 0),
+            ],
+            [
+                'user_id' => 105,
+                'resi' => 'LEX260214001',
+                'nama_pabrik' => 'Pabrik Pipa Spindo',
+                'alamat_asal' => 'Surabaya @-7.25,112.75',
+                'alamat_tujuan' => 'Sidoarjo @-7.45,112.71',
+                'jenis_barang' => 'Pipa Baja',
+                'berat' => 7000,
+                'status' => 'SELESAI',
+                'status_pengiriman' => 'PESANAN TELAH DIKIRIM',
+                'total_biaya' => 2200000,
+                'status_pembayaran' => 'BELUM DIBAYAR', // Piutang
+                'created_at' => Carbon::create(2026, 2, 14, 16, 20, 0),
+            ],
+            [
+                'user_id' => 101,
+                'resi' => 'LEX260220001',
+                'nama_pabrik' => 'Pabrik Baja Cilegon',
+                'alamat_asal' => 'Cilegon @-6.01,106.02',
+                'alamat_tujuan' => 'Jakarta Barat @-6.16,106.76',
+                'jenis_barang' => 'Lempengan Besi',
+                'berat' => 9000,
+                'status' => 'DITOLAK',
+                'status_pengiriman' => '',
+                'total_biaya' => 4500000,
+                'status_pembayaran' => 'BELUM DIBAYAR',
+                'alasan_penolakan' => 'Armada tidak mencukupi untuk kapasitas muatan pada tanggal tersebut.',
+                'created_at' => Carbon::create(2026, 2, 20, 10, 10, 0),
+            ],
+
+            // --- MARET 2026 ---
+            [
+                'user_id' => 102,
+                'resi' => 'LEX260305001',
+                'nama_pabrik' => 'Pabrik Pupuk Kaltim',
+                'alamat_asal' => 'Surabaya @-7.20,112.72',
+                'alamat_tujuan' => 'Malang @-7.98,112.63',
+                'jenis_barang' => 'Pupuk Urea',
+                'berat' => 4500,
+                'status' => 'SELESAI',
+                'status_pengiriman' => 'PESANAN TELAH DIKIRIM',
+                'total_biaya' => 2100000,
+                'status_pembayaran' => 'SUDAH DIBAYAR',
+                'created_at' => Carbon::create(2026, 3, 5, 8, 30, 0),
+            ],
+            [
+                'user_id' => 103,
+                'resi' => 'LEX260315001',
+                'nama_pabrik' => 'Pabrik Indofood',
+                'alamat_asal' => 'Semarang @-6.99,110.42',
+                'alamat_tujuan' => 'Solo @-7.56,110.82',
+                'jenis_barang' => 'Mie Instan',
+                'berat' => 3000,
+                'status' => 'SELESAI',
+                'status_pengiriman' => 'PESANAN TELAH DIKIRIM',
+                'total_biaya' => 1500000,
+                'status_pembayaran' => 'SUDAH DIBAYAR',
+                'created_at' => Carbon::create(2026, 3, 15, 11, 0, 0),
+            ],
+            [
+                'user_id' => 104,
+                'resi' => 'LEX260325001',
+                'nama_pabrik' => 'Pabrik Gula Candi',
+                'alamat_asal' => 'Sidoarjo @-7.44,112.72',
+                'alamat_tujuan' => 'Pasuruan @-7.64,112.90',
+                'jenis_barang' => 'Gula Pasir',
+                'berat' => 5500,
+                'status' => 'SELESAI',
+                'status_pengiriman' => 'PESANAN TELAH DIKIRIM',
+                'total_biaya' => 2600000,
+                'status_pembayaran' => 'BELUM DIBAYAR', // Piutang
+                'created_at' => Carbon::create(2026, 3, 25, 13, 15, 0),
+            ],
+
+            // --- APRIL 2026 ---
+            [
+                'user_id' => 105,
+                'resi' => 'LEX260402001',
+                'nama_pabrik' => 'PT. Krakatau Steel',
+                'alamat_asal' => 'Cilegon @-6.01,106.02',
+                'alamat_tujuan' => 'Karawang @-6.30,107.29',
+                'jenis_barang' => 'Besi Wire Rod',
+                'berat' => 10000,
+                'status' => 'SELESAI',
+                'status_pengiriman' => 'PESANAN TELAH DIKIRIM',
+                'total_biaya' => 5200000,
+                'status_pembayaran' => 'SUDAH DIBAYAR',
+                'created_at' => Carbon::create(2026, 4, 2, 10, 0, 0),
+            ],
+            [
+                'user_id' => 101,
+                'resi' => 'LEX260412001',
+                'nama_pabrik' => 'Pabrik Kabel Metal',
+                'alamat_asal' => 'Tangerang @-6.17,106.63',
+                'alamat_tujuan' => 'Cikarang @-6.26,107.15',
+                'jenis_barang' => 'Kabel Tembaga',
+                'berat' => 3500,
+                'status' => 'SELESAI',
+                'status_pengiriman' => 'PESANAN TELAH DIKIRIM',
+                'total_biaya' => 1900000,
+                'status_pembayaran' => 'BELUM DIBAYAR', // Piutang
+                'created_at' => Carbon::create(2026, 4, 12, 14, 0, 0),
+            ],
+            [
+                'user_id' => 102,
+                'resi' => 'LEX260422001',
+                'nama_pabrik' => 'Pabrik Plastik Mas',
+                'alamat_asal' => 'Surabaya @-7.25,112.75',
+                'alamat_tujuan' => 'Gresik @-7.15,112.65',
+                'jenis_barang' => 'Biji Plastik',
+                'berat' => 4000,
+                'status' => 'SELESAI',
+                'status_pengiriman' => 'PESANAN TELAH DIKIRIM',
+                'total_biaya' => 1600000,
+                'status_pembayaran' => 'SUDAH DIBAYAR',
+                'created_at' => Carbon::create(2026, 4, 22, 15, 30, 0),
+            ],
+
+            // --- MEI 2026 ---
+            [
+                'user_id' => 103,
+                'resi' => 'LEX260501001',
+                'nama_pabrik' => 'PT. Nestle Indonesia',
+                'alamat_asal' => 'Pasuruan @-7.64,112.90',
+                'alamat_tujuan' => 'Surabaya @-7.25,112.75',
+                'jenis_barang' => 'Susu Kemasan',
+                'berat' => 5000,
+                'status' => 'SELESAI',
+                'status_pengiriman' => 'PESANAN TELAH DIKIRIM',
+                'total_biaya' => 2400000,
+                'status_pembayaran' => 'SUDAH DIBAYAR',
+                'created_at' => Carbon::create(2026, 5, 1, 9, 0, 0),
+            ],
+            [
+                'user_id' => 104,
+                'resi' => 'LEX260510001',
+                'nama_pabrik' => 'Pabrik Semen Tuban',
+                'alamat_asal' => 'Tuban @-6.90,112.06',
+                'alamat_tujuan' => 'Surabaya @-7.25,112.75',
+                'jenis_barang' => 'Semen Zak',
+                'berat' => 8500,
+                'status' => 'SELESAI',
+                'status_pengiriman' => 'PESANAN TELAH DIKIRIM',
+                'total_biaya' => 3400000,
+                'status_pembayaran' => 'BELUM DIBAYAR', // Piutang
+                'created_at' => Carbon::create(2026, 5, 10, 11, 45, 0),
+            ],
+            [
+                'user_id' => 105,
+                'resi' => 'LEX260518001',
+                'nama_pabrik' => 'Pabrik Baja Cilegon',
+                'alamat_asal' => 'Cilegon @-6.01,106.02',
+                'alamat_tujuan' => 'Serang @-6.12,106.15',
+                'jenis_barang' => 'Baja Profil',
+                'berat' => 7500,
+                'status' => 'AKTIF',
+                'status_pengiriman' => 'DALAM PERJALANAN',
+                'total_biaya' => 2700000,
+                'status_pembayaran' => 'BELUM DIBAYAR',
+                'created_at' => Carbon::create(2026, 5, 18, 14, 20, 0),
+            ],
+            [
+                'user_id' => 101,
+                'resi' => 'LEX260525001',
+                'nama_pabrik' => 'PT. Sinar Jaya',
+                'alamat_asal' => 'Jakarta Utara @-6.11,106.89',
+                'alamat_tujuan' => 'Depok @-6.40,106.82',
+                'jenis_barang' => 'Minyak Goreng',
+                'berat' => 4800,
+                'status' => 'SELESAI',
+                'status_pengiriman' => 'PESANAN TELAH DIKIRIM',
+                'total_biaya' => 2000000,
+                'status_pembayaran' => 'SUDAH DIBAYAR',
+                'created_at' => Carbon::create(2026, 5, 25, 16, 10, 0),
+            ],
+
+            // --- JUNI 2026 ---
+            [
+                'user_id' => 102,
+                'resi' => 'LEX260601001',
+                'nama_pabrik' => 'Pabrik Pakan Ternak',
+                'alamat_asal' => 'Sidoarjo @-7.44,112.72',
+                'alamat_tujuan' => 'Kediri @-7.81,112.01',
+                'jenis_barang' => 'Konsentrat Pakan',
+                'berat' => 6000,
+                'status' => 'SELESAI',
+                'status_pengiriman' => 'PESANAN TELAH DIKIRIM',
+                'total_biaya' => 3000000,
+                'status_pembayaran' => 'SUDAH DIBAYAR',
+                'created_at' => Carbon::create(2026, 6, 1, 10, 0, 0),
+            ],
+            [
+                'user_id' => 103,
+                'resi' => 'LEX260605001',
+                'nama_pabrik' => 'Pabrik Indofood',
+                'alamat_asal' => 'Bandung @-6.91,107.60',
+                'alamat_tujuan' => 'Jakarta Timur @-6.22,106.90',
+                'jenis_barang' => 'Bumbu Instan',
+                'berat' => 2500,
+                'status' => 'MENUNGGU KONFIRMASI',
+                'status_pengiriman' => '',
+                'total_biaya' => 1400000,
+                'status_pembayaran' => 'BELUM DIBAYAR',
+                'created_at' => Carbon::create(2026, 6, 5, 13, 0, 0),
+            ],
+            [
+                'user_id' => 104,
+                'resi' => 'LEX260610001',
+                'nama_pabrik' => 'Pabrik Gula Candi',
+                'alamat_asal' => 'Sidoarjo @-7.44,112.72',
+                'alamat_tujuan' => 'Surabaya @-7.25,112.75',
+                'jenis_barang' => 'Gula Kristal',
+                'berat' => 4000,
+                'status' => 'AKTIF',
+                'status_pengiriman' => 'MENUNGGU PICKUP',
+                'total_biaya' => 1700000,
+                'status_pembayaran' => 'BELUM DIBAYAR',
+                'created_at' => Carbon::create(2026, 6, 10, 14, 45, 0),
+            ],
+            [
+                'user_id' => 105,
+                'resi' => 'LEX260615001',
+                'nama_pabrik' => 'PT. Steel Indonesia',
+                'alamat_asal' => 'Cilegon @-6.01,106.02',
+                'alamat_tujuan' => 'Bogor @-6.59,106.79',
+                'jenis_barang' => 'Besi Pelat',
+                'berat' => 8000,
+                'status' => 'MENUNGGU KONFIRMASI',
+                'status_pengiriman' => '',
+                'total_biaya' => 3600000,
+                'status_pembayaran' => 'BELUM DIBAYAR',
+                'created_at' => Carbon::create(2026, 6, 15, 11, 0, 0),
+            ]
+        ];
+
+        foreach ($orders as $o) {
+            Pesanan::updateOrCreate(
+                ['resi' => $o['resi']],
+                [
+                    'user_id' => $o['user_id'],
+                    'nama_pabrik' => $o['nama_pabrik'],
+                    'alamat_asal' => $o['alamat_asal'],
+                    'alamat_tujuan' => $o['alamat_tujuan'],
+                    'jenis_barang' => $o['jenis_barang'],
+                    'berat' => $o['berat'],
+                    'status' => $o['status'],
+                    'status_pengiriman' => $o['status_pengiriman'],
+                    'total_biaya' => $o['total_biaya'],
+                    'status_pembayaran' => $o['status_pembayaran'],
+                    'alasan_penolakan' => $o['alasan_penolakan'] ?? null,
+                    'created_at' => $o['created_at'],
+                    'updated_at' => $o['created_at'],
+                ]
+            );
+        }
+    }
+}
