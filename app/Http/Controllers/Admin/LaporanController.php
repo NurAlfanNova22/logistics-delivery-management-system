@@ -37,19 +37,19 @@ class LaporanController extends Controller
             $tagihanPending->where('status', $request->status);
         }
 
-        // Filter Bulan & Tahun
-        if ($request->filled('month') && $request->filled('year')) {
-            $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth();
-            $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
+        // Filter Tanggal Custom
+        if ($request->filled('start_date') && $request->filled('end_date')) {
+            $startDate = Carbon::parse($request->start_date)->startOfDay();
+            $endDate = Carbon::parse($request->end_date)->endOfDay();
 
             $query->whereBetween('created_at', [$startDate, $endDate]);
             $pemasukanLunas->whereBetween('created_at', [$startDate, $endDate]);
             $tagihanPending->whereBetween('created_at', [$startDate, $endDate]);
         } 
-        // Filter Tanggal Custom
-        elseif ($request->filled('start_date') && $request->filled('end_date')) {
-            $startDate = Carbon::parse($request->start_date)->startOfDay();
-            $endDate = Carbon::parse($request->end_date)->endOfDay();
+        // Filter Bulan & Tahun
+        elseif ($request->filled('month') && $request->filled('year')) {
+            $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth();
+            $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
 
             $query->whereBetween('created_at', [$startDate, $endDate]);
             $pemasukanLunas->whereBetween('created_at', [$startDate, $endDate]);
@@ -72,13 +72,13 @@ class LaporanController extends Controller
             ->groupBy('user_id')
             ->with('user');
 
-        if ($request->filled('month') && $request->filled('year')) {
-            $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth();
-            $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
-            $rekapQuery->whereBetween('created_at', [$startDate, $endDate]);
-        } elseif ($request->filled('start_date') && $request->filled('end_date')) {
+        if ($request->filled('start_date') && $request->filled('end_date')) {
             $startDate = Carbon::parse($request->start_date)->startOfDay();
             $endDate = Carbon::parse($request->end_date)->endOfDay();
+            $rekapQuery->whereBetween('created_at', [$startDate, $endDate]);
+        } elseif ($request->filled('month') && $request->filled('year')) {
+            $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth();
+            $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
             $rekapQuery->whereBetween('created_at', [$startDate, $endDate]);
         }
 
@@ -99,19 +99,19 @@ class LaporanController extends Controller
 
             $periode = 'Semua Waktu';
 
-            // Filter Bulan & Tahun
-            if ($request->filled('month') && $request->filled('year')) {
-                $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth();
-                $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
-                $rekapQuery->whereBetween('created_at', [$startDate, $endDate]);
-                $periode = $startDate->translatedFormat('F Y');
-            } 
             // Filter Tanggal Custom
-            elseif ($request->filled('start_date') && $request->filled('end_date')) {
+            if ($request->filled('start_date') && $request->filled('end_date')) {
                 $startDate = Carbon::parse($request->start_date)->startOfDay();
                 $endDate = Carbon::parse($request->end_date)->endOfDay();
                 $rekapQuery->whereBetween('created_at', [$startDate, $endDate]);
                 $periode = $startDate->format('d M Y') . ' - ' . $endDate->format('d M Y');
+            }
+            // Filter Bulan & Tahun
+            elseif ($request->filled('month') && $request->filled('year')) {
+                $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth();
+                $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
+                $rekapQuery->whereBetween('created_at', [$startDate, $endDate]);
+                $periode = $startDate->translatedFormat('F Y');
             }
 
             $rekapCustomer = $rekapQuery->get();
@@ -158,19 +158,8 @@ class LaporanController extends Controller
             $tagihanPending->where('status', $request->status);
         }
 
-        // Filter Bulan & Tahun
-        if ($request->filled('month') && $request->filled('year')) {
-            $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth();
-            $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
-
-            $query->whereBetween('created_at', [$startDate, $endDate]);
-            $pemasukanLunas->whereBetween('created_at', [$startDate, $endDate]);
-            $tagihanPending->whereBetween('created_at', [$startDate, $endDate]);
-
-            $periode = $startDate->translatedFormat('F Y');
-        } 
         // Filter Tanggal Custom
-        elseif ($request->filled('start_date') && $request->filled('end_date')) {
+        if ($request->filled('start_date') && $request->filled('end_date')) {
             $startDate = Carbon::parse($request->start_date)->startOfDay();
             $endDate = Carbon::parse($request->end_date)->endOfDay();
 
@@ -179,6 +168,17 @@ class LaporanController extends Controller
             $tagihanPending->whereBetween('created_at', [$startDate, $endDate]);
 
             $periode = $startDate->format('d M Y') . ' - ' . $endDate->format('d M Y');
+        }
+        // Filter Bulan & Tahun
+        elseif ($request->filled('month') && $request->filled('year')) {
+            $startDate = Carbon::createFromDate($request->year, $request->month, 1)->startOfMonth();
+            $endDate = Carbon::createFromDate($request->year, $request->month, 1)->endOfMonth();
+
+            $query->whereBetween('created_at', [$startDate, $endDate]);
+            $pemasukanLunas->whereBetween('created_at', [$startDate, $endDate]);
+            $tagihanPending->whereBetween('created_at', [$startDate, $endDate]);
+
+            $periode = $startDate->translatedFormat('F Y');
         }
 
         // Ambil semua data (tanpa pagination) untuk diekspor
