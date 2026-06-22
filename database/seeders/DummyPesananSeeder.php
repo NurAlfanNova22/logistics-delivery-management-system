@@ -91,6 +91,9 @@ class DummyPesananSeeder extends Seeder
                 'total_biaya' => 2500000,
                 'status_pembayaran' => 'SUDAH DIBAYAR',
                 'created_at' => Carbon::create(2026, 1, 5, 10, 0, 0),
+                'tanggal_pemesanan' => '2026-01-05',
+                'tanggal_dikirim' => Carbon::create(2026, 1, 5, 11, 0, 0),
+                'tanggal_selesai' => Carbon::create(2026, 1, 5, 16, 0, 0),
             ],
             [
                 'user_id' => 102,
@@ -105,6 +108,9 @@ class DummyPesananSeeder extends Seeder
                 'total_biaya' => 3200000,
                 'status_pembayaran' => 'SUDAH DIBAYAR',
                 'created_at' => Carbon::create(2026, 1, 12, 11, 30, 0),
+                'tanggal_pemesanan' => '2026-01-12',
+                'tanggal_dikirim' => Carbon::create(2026, 1, 12, 13, 0, 0),
+                'tanggal_selesai' => Carbon::create(2026, 1, 12, 18, 30, 0),
             ],
             [
                 'user_id' => 103,
@@ -119,6 +125,9 @@ class DummyPesananSeeder extends Seeder
                 'total_biaya' => 1800000,
                 'status_pembayaran' => 'BELUM DIBAYAR',
                 'created_at' => Carbon::create(2026, 1, 20, 14, 15, 0),
+                'tanggal_pemesanan' => '2026-01-20',
+                'tanggal_dikirim' => null,
+                'tanggal_selesai' => null,
             ],
 
             // --- FEBRUARI 2026 ---
@@ -135,6 +144,9 @@ class DummyPesananSeeder extends Seeder
                 'total_biaya' => 2800000,
                 'status_pembayaran' => 'SUDAH DIBAYAR',
                 'created_at' => Carbon::create(2026, 2, 2, 9, 45, 0),
+                'tanggal_pemesanan' => '2026-02-02',
+                'tanggal_dikirim' => Carbon::create(2026, 2, 2, 10, 30, 0),
+                'tanggal_selesai' => Carbon::create(2026, 2, 2, 14, 0, 0),
             ],
             [
                 'user_id' => 105,
@@ -147,8 +159,11 @@ class DummyPesananSeeder extends Seeder
                 'status' => 'SELESAI',
                 'status_pengiriman' => 'PESANAN TELAH DIKIRIM',
                 'total_biaya' => 2200000,
-                'status_pembayaran' => 'BELUM DIBAYAR', // Piutang
+                'status_pembayaran' => 'BELUM DIBAYAR',
                 'created_at' => Carbon::create(2026, 2, 14, 16, 20, 0),
+                'tanggal_pemesanan' => '2026-02-14',
+                'tanggal_dikirim' => Carbon::create(2026, 2, 14, 17, 0, 0),
+                'tanggal_selesai' => Carbon::create(2026, 2, 14, 21, 0, 0),
             ],
             [
                 'user_id' => 101,
@@ -164,6 +179,9 @@ class DummyPesananSeeder extends Seeder
                 'status_pembayaran' => 'BELUM DIBAYAR',
                 'alasan_penolakan' => 'Armada tidak mencukupi untuk kapasitas muatan pada tanggal tersebut.',
                 'created_at' => Carbon::create(2026, 2, 20, 10, 10, 0),
+                'tanggal_pemesanan' => '2026-02-20',
+                'tanggal_dikirim' => null,
+                'tanggal_selesai' => null,
             ],
 
             // --- MARET 2026 ---
@@ -180,6 +198,9 @@ class DummyPesananSeeder extends Seeder
                 'total_biaya' => 2100000,
                 'status_pembayaran' => 'SUDAH DIBAYAR',
                 'created_at' => Carbon::create(2026, 3, 5, 8, 30, 0),
+                'tanggal_pemesanan' => '2026-03-05',
+                'tanggal_dikirim' => Carbon::create(2026, 3, 5, 9, 30, 0),
+                'tanggal_selesai' => Carbon::create(2026, 3, 5, 14, 0, 0),
             ],
             [
                 'user_id' => 103,
@@ -194,6 +215,9 @@ class DummyPesananSeeder extends Seeder
                 'total_biaya' => 1500000,
                 'status_pembayaran' => 'SUDAH DIBAYAR',
                 'created_at' => Carbon::create(2026, 3, 15, 11, 0, 0),
+                'tanggal_pemesanan' => '2026-03-15',
+                'tanggal_dikirim' => Carbon::create(2026, 3, 15, 12, 0, 0),
+                'tanggal_selesai' => Carbon::create(2026, 3, 15, 16, 30, 0),
             ],
             [
                 'user_id' => 104,
@@ -206,8 +230,11 @@ class DummyPesananSeeder extends Seeder
                 'status' => 'SELESAI',
                 'status_pengiriman' => 'PESANAN TELAH DIKIRIM',
                 'total_biaya' => 2600000,
-                'status_pembayaran' => 'BELUM DIBAYAR', // Piutang
+                'status_pembayaran' => 'BELUM DIBAYAR',
                 'created_at' => Carbon::create(2026, 3, 25, 13, 15, 0),
+                'tanggal_pemesanan' => '2026-03-25',
+                'tanggal_dikirim' => Carbon::create(2026, 3, 25, 14, 0, 0),
+                'tanggal_selesai' => Carbon::create(2026, 3, 25, 18, 0, 0),
             ],
 
             // --- APRIL 2026 ---
@@ -224,6 +251,9 @@ class DummyPesananSeeder extends Seeder
                 'total_biaya' => 5200000,
                 'status_pembayaran' => 'SUDAH DIBAYAR',
                 'created_at' => Carbon::create(2026, 4, 2, 10, 0, 0),
+                'tanggal_pemesanan' => '2026-04-02',
+                'tanggal_dikirim' => Carbon::create(2026, 4, 2, 11, 0, 0),
+                'tanggal_selesai' => Carbon::create(2026, 4, 2, 16, 0, 0),
             ],
             [
                 'user_id' => 101,
@@ -236,8 +266,11 @@ class DummyPesananSeeder extends Seeder
                 'status' => 'SELESAI',
                 'status_pengiriman' => 'PESANAN TELAH DIKIRIM',
                 'total_biaya' => 1900000,
-                'status_pembayaran' => 'BELUM DIBAYAR', // Piutang
+                'status_pembayaran' => 'BELUM DIBAYAR',
                 'created_at' => Carbon::create(2026, 4, 12, 14, 0, 0),
+                'tanggal_pemesanan' => '2026-04-12',
+                'tanggal_dikirim' => Carbon::create(2026, 4, 12, 15, 0, 0),
+                'tanggal_selesai' => Carbon::create(2026, 4, 12, 19, 0, 0),
             ],
             [
                 'user_id' => 102,
@@ -252,6 +285,9 @@ class DummyPesananSeeder extends Seeder
                 'total_biaya' => 1600000,
                 'status_pembayaran' => 'SUDAH DIBAYAR',
                 'created_at' => Carbon::create(2026, 4, 22, 15, 30, 0),
+                'tanggal_pemesanan' => '2026-04-22',
+                'tanggal_dikirim' => Carbon::create(2026, 4, 22, 16, 30, 0),
+                'tanggal_selesai' => Carbon::create(2026, 4, 22, 20, 0, 0),
             ],
 
             // --- MEI 2026 ---
@@ -268,6 +304,9 @@ class DummyPesananSeeder extends Seeder
                 'total_biaya' => 2400000,
                 'status_pembayaran' => 'SUDAH DIBAYAR',
                 'created_at' => Carbon::create(2026, 5, 1, 9, 0, 0),
+                'tanggal_pemesanan' => '2026-05-01',
+                'tanggal_dikirim' => Carbon::create(2026, 5, 1, 10, 0, 0),
+                'tanggal_selesai' => Carbon::create(2026, 5, 1, 14, 0, 0),
             ],
             [
                 'user_id' => 104,
@@ -280,8 +319,11 @@ class DummyPesananSeeder extends Seeder
                 'status' => 'SELESAI',
                 'status_pengiriman' => 'PESANAN TELAH DIKIRIM',
                 'total_biaya' => 3400000,
-                'status_pembayaran' => 'BELUM DIBAYAR', // Piutang
+                'status_pembayaran' => 'BELUM DIBAYAR',
                 'created_at' => Carbon::create(2026, 5, 10, 11, 45, 0),
+                'tanggal_pemesanan' => '2026-05-10',
+                'tanggal_dikirim' => Carbon::create(2026, 5, 10, 13, 0, 0),
+                'tanggal_selesai' => Carbon::create(2026, 5, 10, 18, 0, 0),
             ],
             [
                 'user_id' => 105,
@@ -296,6 +338,9 @@ class DummyPesananSeeder extends Seeder
                 'total_biaya' => 2700000,
                 'status_pembayaran' => 'BELUM DIBAYAR',
                 'created_at' => Carbon::create(2026, 5, 18, 14, 20, 0),
+                'tanggal_pemesanan' => '2026-05-18',
+                'tanggal_dikirim' => Carbon::create(2026, 5, 18, 15, 0, 0),
+                'tanggal_selesai' => null,
             ],
             [
                 'user_id' => 101,
@@ -310,6 +355,9 @@ class DummyPesananSeeder extends Seeder
                 'total_biaya' => 2000000,
                 'status_pembayaran' => 'SUDAH DIBAYAR',
                 'created_at' => Carbon::create(2026, 5, 25, 16, 10, 0),
+                'tanggal_pemesanan' => '2026-05-25',
+                'tanggal_dikirim' => Carbon::create(2026, 5, 25, 17, 0, 0),
+                'tanggal_selesai' => Carbon::create(2026, 5, 25, 22, 0, 0),
             ],
 
             // --- JUNI 2026 ---
@@ -326,6 +374,9 @@ class DummyPesananSeeder extends Seeder
                 'total_biaya' => 3000000,
                 'status_pembayaran' => 'SUDAH DIBAYAR',
                 'created_at' => Carbon::create(2026, 6, 1, 10, 0, 0),
+                'tanggal_pemesanan' => '2026-06-01',
+                'tanggal_dikirim' => Carbon::create(2026, 6, 1, 11, 0, 0),
+                'tanggal_selesai' => Carbon::create(2026, 6, 1, 17, 0, 0),
             ],
             [
                 'user_id' => 103,
@@ -340,6 +391,9 @@ class DummyPesananSeeder extends Seeder
                 'total_biaya' => 1400000,
                 'status_pembayaran' => 'BELUM DIBAYAR',
                 'created_at' => Carbon::create(2026, 6, 5, 13, 0, 0),
+                'tanggal_pemesanan' => '2026-06-05',
+                'tanggal_dikirim' => null,
+                'tanggal_selesai' => null,
             ],
             [
                 'user_id' => 104,
@@ -354,6 +408,9 @@ class DummyPesananSeeder extends Seeder
                 'total_biaya' => 1700000,
                 'status_pembayaran' => 'BELUM DIBAYAR',
                 'created_at' => Carbon::create(2026, 6, 10, 14, 45, 0),
+                'tanggal_pemesanan' => '2026-06-10',
+                'tanggal_dikirim' => null,
+                'tanggal_selesai' => null,
             ],
             [
                 'user_id' => 105,
@@ -368,6 +425,9 @@ class DummyPesananSeeder extends Seeder
                 'total_biaya' => 3600000,
                 'status_pembayaran' => 'BELUM DIBAYAR',
                 'created_at' => Carbon::create(2026, 6, 15, 11, 0, 0),
+                'tanggal_pemesanan' => '2026-06-15',
+                'tanggal_dikirim' => null,
+                'tanggal_selesai' => null,
             ]
         ];
 
@@ -386,6 +446,9 @@ class DummyPesananSeeder extends Seeder
                     'total_biaya' => $o['total_biaya'],
                     'status_pembayaran' => $o['status_pembayaran'],
                     'alasan_penolakan' => $o['alasan_penolakan'] ?? null,
+                    'tanggal_pemesanan' => $o['tanggal_pemesanan'],
+                    'tanggal_dikirim' => $o['tanggal_dikirim'],
+                    'tanggal_selesai' => $o['tanggal_selesai'],
                     'created_at' => $o['created_at'],
                     'updated_at' => $o['created_at'],
                 ]
